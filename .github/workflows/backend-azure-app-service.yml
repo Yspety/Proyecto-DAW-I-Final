@@ -14,7 +14,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend
+        working-directory: backend/inventory-management-api-springboot-main
 
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-          cache-dependency-path: backend/pom.xml
+          cache-dependency-path: backend/inventory-management-api-springboot-main/pom.xml
 
       - name: Build with Maven
         run: |
@@ -40,4 +40,4 @@ jobs:
         with:
           app-name: andina-backend
           publish-profile: ${{ secrets.AZURE_BACKEND_PUBLISH_PROFILE }}
-          package: backend/target/*.jar
+          package: backend/inventory-management-api-springboot-main/target/*.jar
