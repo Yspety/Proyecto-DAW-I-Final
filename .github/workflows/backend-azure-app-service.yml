@@ -5,24 +5,39 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'inventory-management-api-springboot-main(2)/inventory-management-api-springboot-main/**'
+      - 'backend/**'
+      - '.github/workflows/backend-azure-app-service.yml'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     defaults:
       run:
-        working-directory: inventory-management-api-springboot-main(2)/inventory-management-api-springboot-main
+        working-directory: backend
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - run: chmod +x mvnw && ./mvnw clean package -DskipTests
-      - uses: azure/webapps-deploy@v3
+          cache-dependency-path: backend/pom.xml
+
+      - name: Build with Maven
+        run: |
+          chmod +x mvnw || true
+          if [ -f "./mvnw" ]; then
+            ./mvnw clean package -DskipTests
+          else
+            mvn clean package -DskipTests
+          fi
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ secrets.AZURE_BACKEND_APP_NAME }}
+          app-name: andina-backend
           publish-profile: ${{ secrets.AZURE_BACKEND_PUBLISH_PROFILE }}
-          package: inventory-management-api-springboot-main(2)/inventory-management-api-springboot-main/target/*.jar
+          package: backend/target/*.jar
