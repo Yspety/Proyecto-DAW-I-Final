@@ -24,17 +24,17 @@ jobs:
           java-version: '17'
           distribution: 'microsoft'
           cache: maven
-          cache-dependency-path: backend/pom.xml
+          cache-dependency-path: backend/inventory-management-api-springboot-main/pom.xml
 
       - name: Build with Maven
-        working-directory: backend
+        working-directory: backend/inventory-management-api-springboot-main
         run: mvn clean package -DskipTests
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: backend/target/*.jar
+          path: backend/inventory-management-api-springboot-main/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
