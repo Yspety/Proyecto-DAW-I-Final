@@ -1,0 +1,100 @@
+
+.prod-sku-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background-color: #1B2A4A;
+  color: #8FA8D0;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-family: 'DM Mono', 'Courier New', monospace;
+}
+
+/* ── Precio en tabla ──────────────────────────────────────── */
+
+.prod-precio {
+  font-weight: 600;
+  color: #2D4A8A !important;
+  font-size: 13px;
+}
+
+/* ── Layout fila SKU + Nombre (1/3 + 2/3) ────────────────── */
+
+.prod-row-sku {
+  grid-template-columns: 1fr 2fr;
+}
+
+/* ── Input de precio con prefijo S/ ──────────────────────── */
+
+.prod-precio-input {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.prod-precio-prefix {
+  background-color: #F5F7FA;
+  border: 0.5px solid #D3D1C7;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  padding: 0 12px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888780;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.prod-precio-input .erp-form-control {
+  border-radius: 0 8px 8px 0;
+  border-left: none;
+}
+
+.prod-precio-input .erp-form-control:focus {
+  border-left: 0.5px solid #5B9BD5;
+}
+
+/* ── Caja de info en modal ────────────────────────────────── */
+
+.prod-info-box {
+  background-color: #F5F7FA;
+  border: 0.5px solid #D3D1C7;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prod-info-item {
+  font-size: 13px;
+  color: #888780;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prod-info-item::before {
+  content: '·';
+  color: #5B9BD5;
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.prod-info-item strong {
+  color: #444441;
+  font-weight: 500;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .prod-row-sku {
+    grid-template-columns: 1fr;
+  }
+}

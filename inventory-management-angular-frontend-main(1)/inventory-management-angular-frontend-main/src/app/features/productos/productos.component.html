@@ -1,0 +1,149 @@
+<app-navbar />
+
+<main class="erp-page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div>
+      <h1 class="erp-page-title">Productos</h1>
+      <p class="erp-page-subtitle">Catálogo de productos e insumos</p>
+    </div>
+    <button (click)="abrirNuevo()" class="erp-btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Producto
+    </button>
+  </div>
+
+  @if (alerta()) {
+    <div [class]="alerta()!.tipo === 'ok'
+      ? 'flex items-center justify-between gap-2 bg-[#EAF6EE] border border-[#82C99A] text-[#1A5C2E] rounded-lg px-4 py-3 mb-4 text-[13px]'
+      : 'flex items-center justify-between gap-2 bg-[#FCEBEB] border border-[#F09595] text-[#A32D2D] rounded-lg px-4 py-3 mb-4 text-[13px]'">
+      <span>{{ alerta()!.msg }}</span>
+      <button (click)="alerta.set(null)" class="text-current opacity-50 hover:opacity-100 border-none bg-transparent cursor-pointer text-xl leading-none shrink-0">&times;</button>
+    </div>
+  }
+
+  <div class="erp-card">
+    <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
+      <div class="relative max-w-[360px] w-full">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#B4B2A9]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input [(ngModel)]="searchTerm" (input)="filtrar()" class="erp-input pl-9 pr-9 text-[13px]" placeholder="Buscar producto o SKU...">
+        @if (searchTerm) {
+          <button (click)="searchTerm=''; filtrar()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#B4B2A9] hover:text-[#2C2C2A] border-none bg-transparent cursor-pointer text-base leading-none">&times;</button>
+        }
+      </div>
+      <span class="text-[13px] text-[#888780] whitespace-nowrap">Total: <strong class="text-[#1B2A4A]">{{ filtrados.length }}</strong></span>
+    </div>
+
+    <div class="overflow-x-auto rounded-lg border border-[#D3D1C7]">
+      <table class="w-full text-[13px] border-collapse">
+        <thead class="bg-[#F5F7FA]">
+          <tr>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">SKU</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Nombre</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Categoría</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Unidad</th>
+            <th class="text-right px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Precio</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Estado</th>
+            <th class="text-center px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr><td colspan="7" class="text-center text-[#B4B2A9] p-8 text-[13px]">Cargando...</td></tr>
+          }
+          @for (p of filtrados; track p.id) {
+            <tr class="hover:bg-[#F5F7FA] border-b border-[#EEF2F8] last:border-0">
+              <td class="px-3.5 py-2.5 font-mono text-[12px] text-[#2D4A8A]">{{ p.sku }}</td>
+              <td class="px-3.5 py-2.5 font-medium text-[#2C2C2A]">{{ p.nombre }}</td>
+              <td class="px-3.5 py-2.5 text-[#888780]">{{ p.categoriaNombre }}</td>
+              <td class="px-3.5 py-2.5 text-[#888780]">{{ p.unidadNombre }}</td>
+              <td class="px-3.5 py-2.5 text-right text-[#888780]">
+                {{ p.precioLista != null ? ('S/ ' + p.precioLista.toFixed(2)) : '—' }}
+              </td>
+              <td class="px-3.5 py-2.5">
+                <span [class]="p.activo ? 'erp-badge bg-[#EAF6EE] text-[#1A5C2E]' : 'erp-badge bg-[#F5F7FA] text-[#888780]'">
+                  {{ p.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="px-3.5 py-2.5 text-center whitespace-nowrap">
+                <button (click)="abrirEditar(p)" class="erp-action-edit mr-1">Editar</button>
+                <button (click)="eliminar(p)" class="erp-action-delete">Eliminar</button>
+              </td>
+            </tr>
+          }
+          @empty {
+            @if (!cargando()) {
+              <tr><td colspan="7" class="text-center text-[#B4B2A9] p-8 text-[13px]">No hay productos registrados</td></tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<app-footer />
+
+@if (modalAbierto()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="cerrarModal()">
+    <div class="bg-white rounded-[14px] border border-[#D3D1C7] w-full max-w-xl overflow-hidden" (click)="$event.stopPropagation()">
+      <div class="bg-[#1B2A4A] px-6 py-5 flex items-center justify-between">
+        <h5 class="text-[#E8EEF8] font-semibold text-base m-0">{{ modoEdicion() ? 'Editar' : 'Nuevo' }} Producto</h5>
+        <button (click)="cerrarModal()" class="text-[#8FA8D0] hover:text-white text-2xl leading-none border-none bg-transparent cursor-pointer">&times;</button>
+      </div>
+      <div class="p-6 flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="erp-label">SKU <span class="text-red-500">*</span></label>
+            <input type="text" [formControl]="$any(form.get('sku'))" class="erp-input font-mono" placeholder="Ej. PROD-001">
+          </div>
+          <div>
+            <label class="erp-label">Código de Barras</label>
+            <input type="text" [formControl]="$any(form.get('codigoBarras'))" class="erp-input font-mono" placeholder="Opcional">
+          </div>
+        </div>
+        <div>
+          <label class="erp-label">Nombre <span class="text-red-500">*</span></label>
+          <input type="text" [formControl]="$any(form.get('nombre'))" class="erp-input" placeholder="Nombre del producto">
+        </div>
+        <div>
+          <label class="erp-label">Descripción</label>
+          <textarea [formControl]="$any(form.get('descripcion'))" class="erp-textarea" rows="2" placeholder="Descripción opcional"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="erp-label">Categoría <span class="text-red-500">*</span></label>
+            <select [formControl]="$any(form.get('categoriaId'))" class="erp-select">
+              <option [value]="null" disabled>Seleccionar...</option>
+              @for (c of categorias; track c.id) {
+                <option [value]="c.id">{{ c.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="erp-label">Unidad <span class="text-red-500">*</span></label>
+            <select [formControl]="$any(form.get('unidadId'))" class="erp-select">
+              <option [value]="null" disabled>Seleccionar...</option>
+              @for (u of unidades; track u.id) {
+                <option [value]="u.id">{{ u.nombre }} ({{ u.codigo }})</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="erp-label">Precio de Lista</label>
+          <input type="number" step="0.01" [formControl]="$any(form.get('precioLista'))" class="erp-input" placeholder="Opcional">
+        </div>
+        <div class="flex items-center gap-2.5">
+          <input type="checkbox" id="activo-prod" [formControl]="$any(form.get('activo'))" class="w-4 h-4 accent-[#2D4A8A]">
+          <label for="activo-prod" class="text-[13px] text-[#444441] cursor-pointer select-none">Activo</label>
+        </div>
+      </div>
+      <div class="bg-[#F5F7FA] border-t border-[#D3D1C7] px-6 py-4 flex justify-end gap-2.5">
+        <button (click)="cerrarModal()" class="erp-btn-secondary">Cancelar</button>
+        <button (click)="guardar()" [disabled]="form.invalid || guardando()" class="erp-btn-primary disabled:opacity-60">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

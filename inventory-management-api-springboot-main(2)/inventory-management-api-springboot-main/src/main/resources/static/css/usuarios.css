@@ -1,0 +1,35 @@
+
+.usr-identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.usr-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #2D4A8A;
+  color: #8FA8D0;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.usr-username {
+  font-size: 13px;
+  color: #444441;
+  font-weight: 500;
+}
+
+/* ── Badge de rol con ícono ───────────────────────────────── */
+
+.usr-rol-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

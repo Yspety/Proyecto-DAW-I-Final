@@ -1,0 +1,7 @@
+[
+  { "name": "SPRING_DATASOURCE_URL", "value": "jdbc:postgresql://<postgres-server>.postgres.database.azure.com:5432/erp_productos?sslmode=require", "slotSetting": false },
+  { "name": "SPRING_DATASOURCE_USERNAME", "value": "<usuario-postgres>", "slotSetting": false },
+  { "name": "SPRING_DATASOURCE_PASSWORD", "value": "<password-postgres>", "slotSetting": false },
+  { "name": "CORS_ALLOWED_ORIGINS", "value": "https://<tu-frontend>.azurestaticapps.net", "slotSetting": false },
+  { "name": "SPRING_SQL_INIT_MODE", "value": "always", "slotSetting": false }
+]

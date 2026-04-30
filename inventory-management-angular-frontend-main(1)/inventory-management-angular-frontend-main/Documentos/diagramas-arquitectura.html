@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagramas de Arquitectura – Distribuidora Andina SAC</title>
+  <style>
+    :root {
+      --navy: #0F172A;
+      --navy2: #1E293B;
+      --navy3: #334155;
+      --accent: #3B82F6;
+      --accent2: #60A5FA;
+      --green: #10B981;
+      --orange: #F59E0B;
+      --red: #EF4444;
+      --purple: #8B5CF6;
+      --pink: #EC4899;
+      --cyan: #06B6D4;
+      --text: #E2E8F0;
+      --muted: #94A3B8;
+      --border: #334155;
+      --bg: #0B1120;
+      --card: #1E293B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #0F172A 0%, #1a2d5a 100%);
+      padding: 48px 40px 36px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; right: -80px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(59,130,246,0.08);
+    }
+    header h1 { font-size: 28px; font-weight: 800; color: #fff; }
+    header p { color: #64748B; font-size: 15px; margin-top: 8px; max-width: 700px; }
+    .hbadge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.35);
+      border-radius: 20px;
+      color: #60A5FA;
+      padding: 3px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 14px;
+      margin-right: 6px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--navy2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 40px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.18s;
+    }
+    nav a:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 48px 24px 80px; }
+    section { margin-bottom: 72px; }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #F1F5F9;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    p { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+
+    /* ═══════════════════════════════════
+       DIAGRAMA 1: ARQUITECTURA GENERAL
+    ═══════════════════════════════════ */
+    .arch-container {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr 80px 1fr;
+      gap: 0;
+      align-items: start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 32px;
+    }
+    .arch-layer {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .arch-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .arch-box {
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid;
+      text-align: center;
+    }
+    .arch-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding-top: 40px;
+    }
+    .arch-arrow .line {
+      width: 2px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+    .arch-arrow .arrow-label {
+      font-size: 10px;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+    }
+    .arch-arrow-h {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding-top: 52px;
+    }
+    .arrow-line-h {
+      height: 2px;
+      width: 100%;
+      background: linear-gradient(to right, var(--accent), var(--purple));
+      position: relative;
+    }
+    .arrow-line-h::after {
+      content: '▶';
+      position: absolute;
+      right: -6px;
+      top: -9px;
+      color: var(--purple);
+      font-size: 12px;
+    }
+    .arrow-line-h::before {
+      content: '◀';
+      position: absolute;
+      left: -6px;
+      top: -9px;
+      color: var(--accent);
+      font-size: 12px;
+    }
+    .arrow-label-h { font-size: 10px; color: var(--muted); margin-top: 6px; text-align: center; }
+
+    /* frontend colors */
+    .col-fe .arch-title { background: rgba(59,130,246,0.15); color: var(--accent2); border: 1px solid rgba(59,130,246,0.3); }
+    .col-fe .arch-box { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.25); color: #BAE6FD; }
+    .col-fe .arch-box.highlight { background: rgba(59,130,246,0.2); border-color: var(--accent); color: #fff; }
+
+    /* backend colors */
+    .col-be .arch-title { background: rgba(16,185,129,0.15); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.3); }
+    .col-be .arch-box { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.25); color: #A7F3D0; }
+    .col-be .arch-box.highlight { background: rgba(16,185,129,0.2); border-color: var(--green); color: #fff; }
+
+    /* db colors */
+    .col-db .arch-title { background: rgba(245,158,11,0.15); color: #FCD34D; border: 1px solid rgba(245,158,11,0.3); }
+    .col-db .arch-box { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); color: #FDE68A; }
+
+    /* ═══════════════════════════════════
+       DIAGRAMA 2: SECUENCIA AUTH
+    ═══════════════════════════════════ */
+    .seq-diagram {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      overflow-x: auto;
+    }
+    .seq-actors {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 0;
+    }
+    .seq-actor {
+      text-align: center;
+      position: relative;
+    }
+    .seq-actor-box {
+      border-radius: 8px;
+      padding: 10px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid;
+      display: inline-block;
+      width: 100%;
+    }
+    .seq-lifeline {
+      width: 2px;
+      background: var(--border);
+      margin: 0 auto;
+      position: relative;
+    }
+    .seq-flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      position: relative;
+    }
+    .seq-step {
+      position: relative;
+      min-height: 50px;
+    }
+    .msg-arrow {
+      position: absolute;
+      top: 24px;
+      height: 2px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+    }
+    .msg-label {
+      position: absolute;
+      top: 6px;
+      font-size: 10px;
+      color: #F1F5F9;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    .msg-return {
+      background: var(--border);
+      border-style: dashed;
+    }
+
+    /* Secuencia simplificada con table approach */
+    .seq-table {
+      width: 100%;
+    }
+    .seq-table th {
+      text-align: center;
+      padding: 12px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .seq-table td {
+      padding: 0 8px;
+      vertical-align: middle;
+      position: relative;
+    }
+    .actor-col { width: 18%; }
+    .lifeline {
+      width: 2px;
+      background: var(--border);
+      margin: 0 auto;
+      min-height: 42px;
+    }
+    .active-box {
+      background: rgba(59,130,246,0.25);
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      width: 12px;
+      margin: 0 auto;
+      min-height: 42px;
+    }
+    .active-green {
+      background: rgba(16,185,129,0.25);
+      border-color: var(--green);
+    }
+    .active-orange {
+      background: rgba(245,158,11,0.25);
+      border-color: var(--orange);
+    }
+
+    /* ═══════════════════════════════════
+       DIAGRAMA 3: FLUJO HTTP REQUEST
+    ═══════════════════════════════════ */
+    .http-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .http-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      min-height: 60px;
+    }
+    .http-step {
+      flex: 1;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .http-step-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .http-step-title { font-size: 12px; font-weight: 600; color: #F1F5F9; }
+    .http-step-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .http-connector {
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .step-browser { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2); }
+    .step-browser .http-step-num { background: rgba(59,130,246,0.25); color: var(--accent2); }
+    .step-interceptor { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.2); }
+    .step-interceptor .http-step-num { background: rgba(139,92,246,0.25); color: #C4B5FD; }
+    .step-proxy { background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.2); }
+    .step-proxy .http-step-num { background: rgba(6,182,212,0.25); color: #67E8F9; }
+    .step-security { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
+    .step-security .http-step-num { background: rgba(245,158,11,0.25); color: #FCD34D; }
+    .step-controller { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
+    .step-controller .http-step-num { background: rgba(16,185,129,0.25); color: #6EE7B7; }
+    .step-db { background: rgba(249,115,22,0.08); border-color: rgba(249,115,22,0.2); }
+    .step-db .http-step-num { background: rgba(249,115,22,0.25); color: #FDBA74; }
+
+    /* ═══════════════════════════════════
+       DIAGRAMA 4: ESTRUCTURA ANGULAR
+    ═══════════════════════════════════ */
+    .tree {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 13px;
+    }
+    .tree-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 3px 0;
+      border-radius: 4px;
+      transition: background 0.1s;
+    }
+    .tree-row:hover { background: rgba(255,255,255,0.03); }
+    .tree-indent { display: inline-block; width: 20px; flex-shrink: 0; }
+    .tree-icon { flex-shrink: 0; font-size: 14px; }
+    .tree-name { flex: 1; }
+    .tree-desc {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'Segoe UI', sans-serif;
+      margin-left: auto;
+      white-space: nowrap;
+      background: rgba(255,255,255,0.04);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .f-folder { color: #FCD34D; }
+    .f-ts { color: #60A5FA; }
+    .f-html { color: #F87171; }
+    .f-css { color: #A78BFA; }
+    .f-conf { color: #6EE7B7; }
+    .f-root { color: #F8FAFC; font-weight: 700; }
+
+    /* ═══════════════════════════════════
+       DIAGRAMA 5: SPRING SECURITY
+    ═══════════════════════════════════ */
+    .security-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .security-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .security-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .security-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .filter-chain {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .filter-item {
+      padding: 10px 14px;
+      border: 1px solid;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      position: relative;
+    }
+    .filter-item::before {
+      content: '↓';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 12px;
+      z-index: 1;
+    }
+    .filter-item:last-child::before { display: none; }
+    .fi-blue { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.25); color: #BAE6FD; }
+    .fi-green { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.25); color: #A7F3D0; }
+    .fi-orange { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); color: #FDE68A; }
+    .fi-red { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); color: #FECACA; }
+    .fi-purple { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.25); color: #DDD6FE; }
+
+    /* ═══════════════════════════════════
+       DIAGRAMA 6: CICLO CRUD COMPLETO
+    ═══════════════════════════════════ */
+    .crud-cycle {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .crud-card {
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+    }
+    .crud-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      right: 0; height: 3px;
+    }
+    .crud-letter {
+      font-size: 32px;
+      font-weight: 900;
+      opacity: 0.15;
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      line-height: 1;
+    }
+    .crud-op { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .crud-http { font-size: 11px; font-family: monospace; margin-bottom: 12px; }
+    .crud-step { font-size: 11px; color: var(--muted); padding: 3px 0; border-bottom: 1px solid; }
+    .crud-step:last-child { border-bottom: none; }
+
+    .crud-c { background: rgba(16,185,129,0.06); border-color: rgba(16,185,129,0.2); }
+    .crud-c::before { background: var(--green); }
+    .crud-c .crud-letter { color: var(--green); }
+    .crud-c .crud-op { color: #6EE7B7; }
+    .crud-c .crud-http { color: #A7F3D0; }
+    .crud-c .crud-step { border-color: rgba(16,185,129,0.1); }
+
+    .crud-r { background: rgba(59,130,246,0.06); border-color: rgba(59,130,246,0.2); }
+    .crud-r::before { background: var(--accent); }
+    .crud-r .crud-letter { color: var(--accent); }
+    .crud-r .crud-op { color: #93C5FD; }
+    .crud-r .crud-http { color: #BAE6FD; }
+    .crud-r .crud-step { border-color: rgba(59,130,246,0.1); }
+
+    .crud-u { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.2); }
+    .crud-u::before { background: var(--orange); }
+    .crud-u .crud-letter { color: var(--orange); }
+    .crud-u .crud-op { color: #FCD34D; }
+    .crud-u .crud-http { color: #FDE68A; }
+    .crud-u .crud-step { border-color: rgba(245,158,11,0.1); }
+
+    .crud-d { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); }
+    .crud-d::before { background: var(--red); }
+    .crud-d .crud-letter { color: var(--red); }
+    .crud-d .crud-op { color: #FCA5A5; }
+    .crud-d .crud-http { color: #FECACA; }
+    .crud-d .crud-step { border-color: rgba(239,68,68,0.1); }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ── CODE INLINE ── */
+    code {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #93C5FD;
+    }
+
+    /* ── CAPTION ── */
+    .caption {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 14px;
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px;
+      background: var(--navy2);
+      border-top: 1px solid var(--border);
+      color: #475569;
+      font-size: 13px;
+    }
+
+    @media (max-width: 800px) {
+      .security-grid, .crud-cycle { grid-template-columns: 1fr; }
+      .arch-container { grid-template-columns: 1fr; }
+      .arch-arrow-h { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Diagramas de Arquitectura</h1>
+  <p>Representaciones visuales del flujo de datos, autenticación, estructura de capas y comunicación entre Angular y Spring Boot en el sistema ERP de Distribuidora Andina SAC.</p>
+  <div>
+    <span class="hbadge">Angular 18</span>
+    <span class="hbadge">Spring Boot 3.5</span>
+    <span class="hbadge">Spring Security 6</span>
+    <span class="hbadge">HTTP Basic Auth</span>
+    <span class="hbadge">MySQL</span>
+  </div>
+</header>
+
+<nav>
+  <a href="#d1">01 · Arquitectura General</a>
+  <a href="#d2">02 · Flujo de Autenticación</a>
+  <a href="#d3">03 · Ciclo de una Petición HTTP</a>
+  <a href="#d4">04 · Estructura de Carpetas</a>
+  <a href="#d5">05 · Spring Security</a>
+  <a href="#d6">06 · Ciclo CRUD</a>
+</nav>
+
+<main>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="d1">
+    <h2>01 · Arquitectura General del Sistema</h2>
+    <p>El sistema es una aplicación de dos capas: un <strong>SPA (Single Page Application)</strong> en Angular que corre en el navegador, y una <strong>API REST</strong> en Spring Boot que expone los datos. Se comunican a través de HTTP.</p>
+
+    <div class="arch-container">
+      <!-- FRONTEND -->
+      <div class="arch-layer col-fe">
+        <div class="arch-title">🖥 FRONTEND — Angular 18</div>
+        <div class="arch-box">🌐 Navegador (puerto 4200)</div>
+        <div class="arch-box highlight">LoginComponent</div>
+        <div class="arch-box">NavbarComponent</div>
+        <div class="arch-box highlight">ProductosComponent</div>
+        <div class="arch-box">InventarioComponent</div>
+        <div class="arch-box">MovimientosComponent</div>
+        <div style="margin-top:12px">
+          <div class="arch-box" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:#C4B5FD">BasicAuthInterceptor</div>
+        </div>
+        <div class="arch-box" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:#C4B5FD">authGuard</div>
+        <div class="arch-box" style="background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.3);color:#67E8F9">proxy.conf.js</div>
+      </div>
+
+      <!-- ARROW FE → BE -->
+      <div class="arch-arrow-h">
+        <div class="arrow-line-h" style="background:linear-gradient(to right, var(--accent), var(--green))">
+          <span style="position:absolute;right:-8px;top:-10px;color:var(--green);font-size:14px">▶</span>
+          <span style="position:absolute;left:-8px;top:-10px;color:var(--accent);font-size:14px">◀</span>
+        </div>
+        <div class="arrow-label-h">HTTP /api/**<br>Authorization: Basic ...</div>
+      </div>
+
+      <!-- BACKEND -->
+      <div class="arch-layer col-be">
+        <div class="arch-title">⚙️ BACKEND — Spring Boot 3.5</div>
+        <div class="arch-box">🔒 Spring Security (puerto 8080)</div>
+        <div class="arch-box highlight">SecurityConfig (2 filter chains)</div>
+        <div class="arch-box">BasicAuthenticationFilter</div>
+        <div class="arch-box">RestControllers (/api/**)</div>
+        <div class="arch-box">Services (lógica de negocio)</div>
+        <div class="arch-box">Repositories (JPA)</div>
+        <div style="margin-top: 12px">
+          <div class="arch-box" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:#FDE68A">ApiResponse Envelope</div>
+        </div>
+        <div class="arch-box" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:#FDE68A">{ success, message, data }</div>
+      </div>
+
+      <!-- ARROW BE → DB -->
+      <div class="arch-arrow-h">
+        <div class="arrow-line-h" style="background:linear-gradient(to right, var(--green), var(--orange))">
+          <span style="position:absolute;right:-8px;top:-10px;color:var(--orange);font-size:14px">▶</span>
+          <span style="position:absolute;left:-8px;top:-10px;color:var(--green);font-size:14px">◀</span>
+        </div>
+        <div class="arrow-label-h">JPA / JDBC<br>SQL Queries</div>
+      </div>
+
+      <!-- DB -->
+      <div class="arch-layer col-db">
+        <div class="arch-title">🗄 BASE DE DATOS — MySQL</div>
+        <div class="arch-box">tabla: almacenes</div>
+        <div class="arch-box">tabla: categorias</div>
+        <div class="arch-box highlight">tabla: productos</div>
+        <div class="arch-box">tabla: unidades</div>
+        <div class="arch-box">tabla: inventario</div>
+        <div class="arch-box">tabla: movimientos</div>
+        <div class="arch-box">tabla: usuarios</div>
+        <div class="arch-box">tabla: roles</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Capa Frontend</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Capa Backend</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Capa Datos</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Cross-cutting (interceptores, guards)</div>
+    </div>
+    <p class="caption">Diagrama 1: Vista de tres capas. El navegador nunca accede directamente a la base de datos.</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="d2">
+    <h2>02 · Flujo de Autenticación (Diagrama de Secuencia)</h2>
+    <p>Este diagrama muestra cada paso que ocurre desde que el usuario escribe sus credenciales hasta que llega al dashboard, incluyendo la validación en Spring Security.</p>
+
+    <div class="seq-diagram">
+      <!-- Cabeceras de actores -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;margin-bottom:0">
+        <div style="text-align:center">
+          <div style="background:rgba(59,130,246,0.15);border:1.5px solid rgba(59,130,246,0.4);border-radius:8px;padding:8px;font-size:12px;font-weight:700;color:#93C5FD">👤 Usuario</div>
+        </div>
+        <div style="text-align:center">
+          <div style="background:rgba(59,130,246,0.15);border:1.5px solid rgba(59,130,246,0.4);border-radius:8px;padding:8px;font-size:12px;font-weight:700;color:#93C5FD">LoginComponent</div>
+        </div>
+        <div style="text-align:center">
+          <div style="background:rgba(139,92,246,0.15);border:1.5px solid rgba(139,92,246,0.4);border-radius:8px;padding:8px;font-size:12px;font-weight:700;color:#C4B5FD">AuthService</div>
+        </div>
+        <div style="text-align:center">
+          <div style="background:rgba(6,182,212,0.15);border:1.5px solid rgba(6,182,212,0.4);border-radius:8px;padding:8px;font-size:12px;font-weight:700;color:#67E8F9">HttpClient +<br>Interceptor</div>
+        </div>
+        <div style="text-align:center">
+          <div style="background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.4);border-radius:8px;padding:8px;font-size:12px;font-weight:700;color:#6EE7B7">Spring Boot<br>:8080</div>
+        </div>
+      </div>
+
+      <!-- Mensajes de secuencia -->
+      <div style="padding: 8px 0">
+        <!-- Fila separadora con líneas de vida -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;min-height:16px">
+          <div style="border-right:2px dashed #334155;margin-left:50%"></div>
+          <div style="border-right:2px dashed #334155;margin-left:50%"></div>
+          <div style="border-right:2px dashed #334155;margin-left:50%"></div>
+          <div style="border-right:2px dashed #334155;margin-left:50%"></div>
+          <div style="border-right:2px dashed #334155;margin-left:50%"></div>
+        </div>
+
+        <!-- Función auxiliar: cada mensaje es una fila con flecha entre columnas -->
+        <!-- MSG 1: Usuario → LoginComponent -->
+        <div style="position:relative;min-height:50px;display:flex;align-items:center;padding:0 8px">
+          <div style="position:absolute;left:calc(10% );right:calc(60%);height:2px;background:var(--accent);top:50%"></div>
+          <div style="position:absolute;left:calc(40% + 2px);top:calc(50% - 8px);color:var(--accent);font-size:12px">▶</div>
+          <div style="position:absolute;left:50%;transform:translateX(-50%);top:6px;font-size:11px;color:#F1F5F9;white-space:nowrap;font-weight:500">Ingresa usuario + password → clic "Iniciar sesión"</div>
+          <!-- Líneas de vida -->
+          <div style="position:absolute;left:10%;top:0;bottom:0;width:2px;background:#334155;opacity:0.5"></div>
+          <div style="position:absolute;left:30%;top:0;bottom:0;width:2px;background:#334155;opacity:0.5"></div>
+          <div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#334155;opacity:0.5"></div>
+          <div style="position:absolute;left:70%;top:0;bottom:0;width:2px;background:#334155;opacity:0.5"></div>
+          <div style="position:absolute;left:90%;top:0;bottom:0;width:2px;background:#334155;opacity:0.5"></div>
+        </div>
+
+        <!-- Filas de mensajes detallados en forma de tabla legible -->
+        <div style="overflow-x:auto;margin-top:8px">
+          <table style="width:100%;border-collapse:collapse;font-size:12px">
+            <thead>
+              <tr>
+                <th style="width:5%;padding:8px;text-align:center;color:var(--muted);border-bottom:1px solid var(--border)">#</th>
+                <th style="width:15%;padding:8px;color:var(--muted);border-bottom:1px solid var(--border)">Origen</th>
+                <th style="width:15%;padding:8px;color:var(--muted);border-bottom:1px solid var(--border)">Destino</th>
+                <th style="width:35%;padding:8px;color:var(--muted);border-bottom:1px solid var(--border)">Mensaje / Acción</th>
+                <th style="width:30%;padding:8px;color:var(--muted);border-bottom:1px solid var(--border)">Código involucrado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:rgba(59,130,246,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--accent);font-weight:700">1</td>
+                <td style="padding:10px 8px;color:#93C5FD">👤 Usuario</td>
+                <td style="padding:10px 8px;color:#93C5FD">LoginComponent</td>
+                <td style="padding:10px 8px">Hace clic en "Iniciar sesión" con usuario y password</td>
+                <td style="padding:10px 8px"><code>form.controls.usuario.value</code></td>
+              </tr>
+              <tr style="background:rgba(59,130,246,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--accent);font-weight:700">2</td>
+                <td style="padding:10px 8px;color:#93C5FD">LoginComponent</td>
+                <td style="padding:10px 8px;color:#C4B5FD">AuthService</td>
+                <td style="padding:10px 8px">Llama <code>auth.login(usuario, password)</code></td>
+                <td style="padding:10px 8px"><code>this.authService.login(u, p)</code></td>
+              </tr>
+              <tr>
+                <td style="padding:10px 8px;text-align:center;color:var(--purple);font-weight:700">3</td>
+                <td style="padding:10px 8px;color:#C4B5FD">AuthService</td>
+                <td style="padding:10px 8px;color:#C4B5FD">AuthService</td>
+                <td style="padding:10px 8px">Genera token Base64: <code>btoa("admin:1234")</code> → <code>"YWRtaW46MTIzNA=="</code></td>
+                <td style="padding:10px 8px"><code>localStorage.setItem('erp_token', token)</code></td>
+              </tr>
+              <tr style="background:rgba(6,182,212,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--cyan);font-weight:700">4</td>
+                <td style="padding:10px 8px;color:#C4B5FD">AuthService</td>
+                <td style="padding:10px 8px;color:#67E8F9">HttpClient</td>
+                <td style="padding:10px 8px">Lanza <code>GET /api/usuarios/me</code></td>
+                <td style="padding:10px 8px"><code>this.http.get('/api/usuarios/me')</code></td>
+              </tr>
+              <tr style="background:rgba(6,182,212,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--cyan);font-weight:700">5</td>
+                <td style="padding:10px 8px;color:#67E8F9">Interceptor</td>
+                <td style="padding:10px 8px;color:#67E8F9">Interceptor</td>
+                <td style="padding:10px 8px">Intercepta la petición, añade header <code>Authorization: Basic YWRtaW46MTIzNA==</code></td>
+                <td style="padding:10px 8px"><code>req.clone({ setHeaders: { Authorization: `Basic ${token}` } })</code></td>
+              </tr>
+              <tr style="background:rgba(6,182,212,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--cyan);font-weight:700">6</td>
+                <td style="padding:10px 8px;color:#67E8F9">Proxy</td>
+                <td style="padding:10px 8px;color:#6EE7B7">Spring Boot</td>
+                <td style="padding:10px 8px">Redirige <code>/api/usuarios/me</code> → <code>http://localhost:8080/api/usuarios/me</code></td>
+                <td style="padding:10px 8px"><code>proxy.conf.js → target: 'http://localhost:8080'</code></td>
+              </tr>
+              <tr style="background:rgba(16,185,129,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--green);font-weight:700">7</td>
+                <td style="padding:10px 8px;color:#6EE7B7">Spring Security</td>
+                <td style="padding:10px 8px;color:#6EE7B7">Spring Security</td>
+                <td style="padding:10px 8px">Decodifica Base64, busca usuario en BD, valida BCrypt password hash</td>
+                <td style="padding:10px 8px"><code>BasicAuthenticationFilter</code> + <code>UserDetailsService</code></td>
+              </tr>
+              <tr style="background:rgba(16,185,129,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--green);font-weight:700">8a ✅</td>
+                <td style="padding:10px 8px;color:#6EE7B7">Spring Boot</td>
+                <td style="padding:10px 8px;color:#67E8F9">HttpClient</td>
+                <td style="padding:10px 8px"><strong>HTTP 200</strong>: devuelve <code>{ success: true, data: { nombre, apellido, rolDescripcion } }</code></td>
+                <td style="padding:10px 8px"><code>UsuarioRestController.me()</code></td>
+              </tr>
+              <tr style="background:rgba(239,68,68,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--red);font-weight:700">8b ❌</td>
+                <td style="padding:10px 8px;color:#FCA5A5">Spring Boot</td>
+                <td style="padding:10px 8px;color:#67E8F9">HttpClient</td>
+                <td style="padding:10px 8px"><strong>HTTP 401</strong>: Spring Security rechaza las credenciales incorrectas</td>
+                <td style="padding:10px 8px"><code>catchError → removeItem('erp_token') → throwError</code></td>
+              </tr>
+              <tr>
+                <td style="padding:10px 8px;text-align:center;color:var(--purple);font-weight:700">9</td>
+                <td style="padding:10px 8px;color:#C4B5FD">AuthService</td>
+                <td style="padding:10px 8px;color:#C4B5FD">AuthService</td>
+                <td style="padding:10px 8px">Guarda perfil en localStorage: <code>{ nombreCompleto, rol }</code></td>
+                <td style="padding:10px 8px"><code>localStorage.setItem('erp_user', JSON.stringify(...))</code></td>
+              </tr>
+              <tr style="background:rgba(59,130,246,0.05)">
+                <td style="padding:10px 8px;text-align:center;color:var(--accent);font-weight:700">10</td>
+                <td style="padding:10px 8px;color:#93C5FD">LoginComponent</td>
+                <td style="padding:10px 8px;color:#93C5FD">Router</td>
+                <td style="padding:10px 8px">Navega a <code>/home</code> en caso de éxito</td>
+                <td style="padding:10px 8px"><code>this.router.navigate(['/home'])</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <p class="caption">Diagrama 2: Cada número representa un evento en el tiempo. El orden es estrictamente secuencial.</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="d3">
+    <h2>03 · Ciclo de Vida de una Petición HTTP</h2>
+    <p>Cada vez que un componente Angular necesita datos, la petición viaja por estas capas en orden. Aquí el ejemplo es <code>GET /api/productos</code>.</p>
+
+    <!-- REQUEST: ida -->
+    <div style="margin-bottom:8px;font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px">→ REQUEST (Angular → Backend)</div>
+    <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr;align-items:center;gap:0;margin-bottom:24px">
+      <div class="http-step step-browser">
+        <div class="http-step-num">1</div>
+        <div class="http-step-title">Componente</div>
+        <div class="http-step-sub">ProductosComponent<br>ngOnInit()</div>
+      </div>
+      <div style="text-align:center;color:var(--accent);font-size:18px;font-weight:700">→</div>
+      <div class="http-step step-browser">
+        <div class="http-step-num">2</div>
+        <div class="http-step-title">Service</div>
+        <div class="http-step-sub">ProductoService<br>.getAll()</div>
+      </div>
+      <div style="text-align:center;color:var(--accent);font-size:18px;font-weight:700">→</div>
+      <div class="http-step step-interceptor">
+        <div class="http-step-num">3</div>
+        <div class="http-step-title">Interceptor</div>
+        <div class="http-step-sub">Añade Basic Auth<br>header</div>
+      </div>
+      <div style="text-align:center;color:var(--accent);font-size:18px;font-weight:700">→</div>
+      <div class="http-step step-proxy">
+        <div class="http-step-num">4</div>
+        <div class="http-step-title">Dev Proxy</div>
+        <div class="http-step-sub">:4200 → :8080<br>proxy.conf.js</div>
+      </div>
+      <div style="text-align:center;color:var(--accent);font-size:18px;font-weight:700">→</div>
+      <div class="http-step step-security">
+        <div class="http-step-num">5</div>
+        <div class="http-step-title">Spring Security</div>
+        <div class="http-step-sub">Decodifica Base64<br>Valida usuario/pwd</div>
+      </div>
+      <div style="text-align:center;color:var(--green);font-size:18px;font-weight:700">→</div>
+      <div class="http-step step-controller">
+        <div class="http-step-num">6</div>
+        <div class="http-step-title">RestController</div>
+        <div class="http-step-sub">ProductoRestController<br>GET /api/productos</div>
+      </div>
+    </div>
+
+    <!-- RESPONSE: vuelta -->
+    <div style="margin-bottom:8px;font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">← RESPONSE (Backend → Angular)</div>
+    <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr;align-items:center;gap:0">
+      <div class="http-step step-browser" style="border-top:3px solid var(--green)">
+        <div class="http-step-num" style="background:rgba(16,185,129,0.25);color:#6EE7B7">✓</div>
+        <div class="http-step-title">Template</div>
+        <div class="http-step-sub">*ngFor renderiza<br>la tabla</div>
+      </div>
+      <div style="text-align:center;color:var(--green);font-size:18px;font-weight:700">←</div>
+      <div class="http-step step-browser" style="border-top:3px solid var(--green)">
+        <div class="http-step-num" style="background:rgba(16,185,129,0.25);color:#6EE7B7">✓</div>
+        <div class="http-step-title">Service .pipe()</div>
+        <div class="http-step-sub">map(r => r.data)<br>desenvuelve envelope</div>
+      </div>
+      <div style="text-align:center;color:var(--green);font-size:18px;font-weight:700">←</div>
+      <div class="http-step step-interceptor" style="border-top:3px solid var(--green)">
+        <div class="http-step-num" style="background:rgba(16,185,129,0.25);color:#6EE7B7">✓</div>
+        <div class="http-step-title">HttpClient</div>
+        <div class="http-step-sub">Deserializa JSON<br>a objeto TS</div>
+      </div>
+      <div style="text-align:center;color:var(--green);font-size:18px;font-weight:700">←</div>
+      <div class="http-step step-proxy" style="border-top:3px solid var(--green)">
+        <div class="http-step-num" style="background:rgba(16,185,129,0.25);color:#6EE7B7">✓</div>
+        <div class="http-step-title">Proxy</div>
+        <div class="http-step-sub">Remueve header<br>WWW-Authenticate</div>
+      </div>
+      <div style="text-align:center;color:var(--green);font-size:18px;font-weight:700">←</div>
+      <div class="http-step step-security" style="border-top:3px solid var(--green)">
+        <div class="http-step-num" style="background:rgba(16,185,129,0.25);color:#6EE7B7">✓</div>
+        <div class="http-step-title">HTTP 200 OK</div>
+        <div class="http-step-sub">{ success, message,<br>data: Producto[] }</div>
+      </div>
+      <div style="text-align:center;color:var(--green);font-size:18px;font-weight:700">←</div>
+      <div class="http-step step-db" style="border-top:3px solid var(--green)">
+        <div class="http-step-num" style="background:rgba(249,115,22,0.25);color:#FDBA74">✓</div>
+        <div class="http-step-title">Repository</div>
+        <div class="http-step-sub">JPA → SELECT<br>FROM productos</div>
+      </div>
+    </div>
+
+    <p class="caption" style="margin-top:16px">Diagrama 3: La petición recorre 6 capas de ida y 6 de vuelta. Cada capa tiene una responsabilidad única.</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="d4">
+    <h2>04 · Estructura de Carpetas Angular</h2>
+    <p>La organización sigue la arquitectura <strong>Core / Features / Shared</strong>, un patrón estándar para aplicaciones Angular escalables.</p>
+
+    <div class="tree">
+      <!-- Root -->
+      <div class="tree-row"><span class="tree-icon f-folder">📁</span><span class="tree-name f-root">frontend-angular/src/app/</span></div>
+
+      <!-- app files -->
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">app.ts</span><span class="tree-desc">Componente raíz</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">app.config.ts</span><span class="tree-desc">provideHttpClient, router, interceptors</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">app.routes.ts</span><span class="tree-desc">Rutas lazy-loaded con authGuard</span></div>
+
+      <!-- CORE -->
+      <div class="tree-row" style="margin-top:8px"><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name" style="color:#FCD34D;font-weight:700">core/</span><span class="tree-desc">Singletons globales</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name f-folder">guards/</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">auth.guard.ts</span><span class="tree-desc">CanActivateFn – verifica erp_token</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name f-folder">interceptors/</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">basic-auth.interceptor.ts</span><span class="tree-desc">Añade Authorization: Basic a /api/**</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name f-folder">models/</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">api-response.model.ts</span><span class="tree-desc">ApiEnvelope&lt;T&gt; { success, message, data, total }</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">producto.model.ts</span><span class="tree-desc">Producto + ProductoRequest</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon" style="color:#94A3B8">📄</span><span class="tree-name" style="color:#94A3B8">almacen | categoria | unidad | inventario | movimiento | usuario</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name f-folder">services/</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">auth.service.ts</span><span class="tree-desc">login, logout, isAuthenticated, isAdmin</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">producto.service.ts</span><span class="tree-desc">getAll, create, update, delete → /api/productos</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon" style="color:#94A3B8">📄</span><span class="tree-name" style="color:#94A3B8">almacen | categoria | unidad | inventario | movimiento | usuario service</span></div>
+
+      <!-- FEATURES -->
+      <div class="tree-row" style="margin-top:8px"><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name" style="color:#F87171;font-weight:700">features/</span><span class="tree-desc">Páginas/vistas de la app</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name f-folder">auth/login/</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">login.component.ts</span><span class="tree-desc">Formulario reactivo + btoa() + navigate /home</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-html">📄</span><span class="tree-name f-html">login.component.html</span><span class="tree-desc">Panel izquierdo brand + panel derecho form</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name f-folder">productos/</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">productos.component.ts</span><span class="tree-desc">signal(), forkJoin, modal CRUD</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-html">📄</span><span class="tree-name f-html">productos.component.html</span><span class="tree-desc">Tabla + búsqueda + modal form</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon" style="color:#94A3B8">📁</span><span class="tree-name" style="color:#94A3B8">home | almacenes | categorias | unidades | inventario | movimientos | usuarios</span></div>
+
+      <!-- SHARED -->
+      <div class="tree-row" style="margin-top:8px"><span class="tree-indent"></span><span class="tree-icon f-folder">📁</span><span class="tree-name" style="color:#6EE7B7;font-weight:700">shared/components/</span><span class="tree-desc">Reutilizables globales</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">navbar.component.ts</span><span class="tree-desc">Sticky nav, dropdown, avatar, logout</span></div>
+      <div class="tree-row"><span class="tree-indent"></span><span class="tree-indent"></span><span class="tree-icon f-ts">📄</span><span class="tree-name f-ts">footer.component.ts</span><span class="tree-desc">Copyright + versión, siempre al fondo</span></div>
+
+      <!-- CONFIG -->
+      <div class="tree-row" style="margin-top:8px"><span class="tree-icon f-conf">📄</span><span class="tree-name f-conf">proxy.conf.js</span><span class="tree-desc">/api/* → http://localhost:8080, quita WWW-Authenticate</span></div>
+      <div class="tree-row"><span class="tree-icon f-css">📄</span><span class="tree-name f-css">src/styles.css</span><span class="tree-desc">Tailwind + clases ERP (.erp-input, .erp-btn-primary, etc.)</span></div>
+    </div>
+    <p class="caption">Diagrama 4: Árbol de carpetas. <span style="color:#FCD34D">Core</span> = singleton. <span style="color:#F87171">Features</span> = páginas. <span style="color:#6EE7B7">Shared</span> = reutilizables.</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="d5">
+    <h2>05 · Spring Security — Cómo protege el backend</h2>
+    <p>Spring Security intercepta <strong>todas</strong> las peticiones HTTP antes de que lleguen al controlador. El sistema usa dos <em>filter chains</em> independientes.</p>
+
+    <div class="security-grid">
+      <!-- Chain 1: REST API -->
+      <div class="security-box">
+        <div class="security-title">
+          <div class="security-dot" style="background:var(--accent)"></div>
+          Filter Chain 1: REST API (/api/**)
+        </div>
+        <div class="filter-chain">
+          <div class="filter-item fi-blue">📥 Llega petición HTTP con header<br><code>Authorization: Basic YWRtaW46MTIzNA==</code></div>
+          <div class="filter-item fi-purple">🔍 BasicAuthenticationFilter<br>Decodifica Base64 → "admin:1234"</div>
+          <div class="filter-item fi-orange">🗄 UserDetailsService.loadUserByUsername("admin")<br>Busca usuario en tabla <code>usuarios</code> de MySQL</div>
+          <div class="filter-item fi-orange">🔐 PasswordEncoder.matches()<br>Compara "1234" con BCrypt hash almacenado</div>
+          <div class="filter-item fi-green">✅ SecurityContext actualizado<br>Guarda el Authentication para la petición</div>
+          <div class="filter-item fi-green">🎯 Llega al RestController<br>Procesa GET/POST/PUT/DELETE</div>
+        </div>
+      </div>
+
+      <!-- Chain 2: MVC -->
+      <div class="security-box">
+        <div class="security-title">
+          <div class="security-dot" style="background:var(--orange)"></div>
+          Filter Chain 2: MVC / Admin Web (/admin/**)
+        </div>
+        <div class="filter-chain">
+          <div class="filter-item fi-orange">📥 Petición web (navegador al backend)<br>Sin header Authorization</div>
+          <div class="filter-item fi-orange">🍪 UsernamePasswordAuthenticationFilter<br>Form login con sesión (cookie JSESSIONID)</div>
+          <div class="filter-item fi-orange">🔐 Misma validación BCrypt</div>
+          <div class="filter-item fi-orange">✅ Sesión HTTP establecida</div>
+          <div class="filter-item fi-orange">🎯 Llega al Controller (Thymeleaf MVC)</div>
+        </div>
+        <div style="margin-top:16px;padding:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:6px;font-size:12px;color:#FDE68A">
+          ⚠️ Esta cadena es para el backend web de administración, NO es usada por el frontend Angular.
+        </div>
+      </div>
+    </div>
+
+    <!-- Rechazo 401 -->
+    <div style="margin-top:24px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:24px">
+      <div style="font-size:13px;font-weight:700;color:#FCA5A5;margin-bottom:12px">🚫 ¿Qué pasa cuando Spring Security RECHAZA la petición?</div>
+      <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr;gap:8px;align-items:center">
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:6px;padding:10px;font-size:12px;color:#FECACA">
+          Credenciales incorrectas o token ausente en la petición
+        </div>
+        <div style="text-align:center;color:var(--red);font-size:16px">→</div>
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:6px;padding:10px;font-size:12px;color:#FECACA">
+          Spring Security responde <strong>HTTP 401 Unauthorized</strong><br>
+          <code>WWW-Authenticate: Basic realm="ERP"</code> (el proxy lo elimina)
+        </div>
+        <div style="text-align:center;color:var(--red);font-size:16px">→</div>
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:6px;padding:10px;font-size:12px;color:#FECACA">
+          Angular: <code>catchError</code> en AuthService limpia localStorage y muestra el error al usuario
+        </div>
+      </div>
+    </div>
+
+    <p class="caption">Diagrama 5: Spring Security actúa como portero antes de que cualquier dato llegue al controlador. El frontend Angular solo interactúa con la Chain 1 (REST).</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="d6">
+    <h2>06 · Ciclo CRUD Completo — Ejemplo Producto</h2>
+    <p>Las cuatro operaciones fundamentales de la aplicación y el flujo exacto de cada una, usando el recurso <strong>Producto</strong> como caso de estudio.</p>
+
+    <div class="crud-cycle">
+      <!-- CREATE -->
+      <div class="crud-card crud-c">
+        <div class="crud-letter">C</div>
+        <div class="crud-op">CREATE</div>
+        <div class="crud-http">POST /api/productos</div>
+        <div class="crud-step">1. Clic "+ Nuevo Producto"</div>
+        <div class="crud-step">2. modal.set(true), form.reset()</div>
+        <div class="crud-step">3. Usuario llena formulario</div>
+        <div class="crud-step">4. guardando.set(true)</div>
+        <div class="crud-step">5. productoService.create(body)</div>
+        <div class="crud-step">6. Interceptor añade Basic Auth</div>
+        <div class="crud-step">7. Spring guarda en MySQL</div>
+        <div class="crud-step">8. HTTP 201 → next()</div>
+        <div class="crud-step">9. cargar(), alerta OK</div>
+        <div class="crud-step">10. modal.set(false)</div>
+      </div>
+
+      <!-- READ -->
+      <div class="crud-card crud-r">
+        <div class="crud-letter">R</div>
+        <div class="crud-op">READ</div>
+        <div class="crud-http">GET /api/productos</div>
+        <div class="crud-step">1. Router navega /productos</div>
+        <div class="crud-step">2. Angular instancia componente</div>
+        <div class="crud-step">3. ngOnInit → cargar()</div>
+        <div class="crud-step">4. cargando.set(true)</div>
+        <div class="crud-step">5. forkJoin(3 requests)</div>
+        <div class="crud-step">6. Interceptor + proxy</div>
+        <div class="crud-step">7. Spring Security valida</div>
+        <div class="crud-step">8. JPA SELECT productos</div>
+        <div class="crud-step">9. map(r => r.data)</div>
+        <div class="crud-step">10. *ngFor renderiza tabla</div>
+      </div>
+
+      <!-- UPDATE -->
+      <div class="crud-card crud-u">
+        <div class="crud-letter">U</div>
+        <div class="crud-op">UPDATE</div>
+        <div class="crud-http">PUT /api/productos/{id}</div>
+        <div class="crud-step">1. Clic "Editar" en fila</div>
+        <div class="crud-step">2. modoEdicion.set(true)</div>
+        <div class="crud-step">3. idEditando = producto.id</div>
+        <div class="crud-step">4. form.patchValue(producto)</div>
+        <div class="crud-step">5. modal.set(true)</div>
+        <div class="crud-step">6. Usuario modifica campos</div>
+        <div class="crud-step">7. guardando.set(true)</div>
+        <div class="crud-step">8. productoService.update(id, body)</div>
+        <div class="crud-step">9. Spring UPDATE en MySQL</div>
+        <div class="crud-step">10. cargar(), alerta OK</div>
+      </div>
+
+      <!-- DELETE -->
+      <div class="crud-card crud-d">
+        <div class="crud-letter">D</div>
+        <div class="crud-op">DELETE</div>
+        <div class="crud-http">DELETE /api/productos/{id}</div>
+        <div class="crud-step">1. Clic "Eliminar" en fila</div>
+        <div class="crud-step">2. confirm('¿Seguro?')</div>
+        <div class="crud-step">3. Si cancela → nada</div>
+        <div class="crud-step">4. Si confirma → delete(id)</div>
+        <div class="crud-step">5. Interceptor + proxy</div>
+        <div class="crud-step">6. Spring Security valida</div>
+        <div class="crud-step">7. Verifica FK MySQL</div>
+        <div class="crud-step">8. HTTP 200 → next()</div>
+        <div class="crud-step">9. cargar(), alerta OK</div>
+        <div class="crud-step">⚠ HTTP 409 → alerta ERROR</div>
+      </div>
+    </div>
+
+    <!-- Señales Angular -->
+    <div style="margin-top:32px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+      <div style="font-size:13px;font-weight:700;color:#F1F5F9;margin-bottom:16px">📡 Señales (Signals) usadas en cada componente CRUD</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+        <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:20px;margin-bottom:4px">⏳</div>
+          <div style="font-size:12px;font-weight:700;color:#93C5FD">cargando</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">Muestra spinner mientras cargan los datos</div>
+        </div>
+        <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:20px;margin-bottom:4px">🪟</div>
+          <div style="font-size:12px;font-weight:700;color:#C4B5FD">modalAbierto</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">Muestra/oculta el modal de formulario</div>
+        </div>
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:20px;margin-bottom:4px">✏️</div>
+          <div style="font-size:12px;font-weight:700;color:#FCD34D">modoEdicion</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">true=PUT, false=POST en guardar()</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:20px;margin-bottom:4px">💾</div>
+          <div style="font-size:12px;font-weight:700;color:#6EE7B7">guardando</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">Deshabilita botón para evitar doble clic</div>
+        </div>
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:20px;margin-bottom:4px">🔔</div>
+          <div style="font-size:12px;font-weight:700;color:#FCA5A5">alerta</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">{ tipo: 'ok'|'err', msg } | null. Auto-dismiss 5s</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="caption">Diagrama 6: Los 4 pasos CRUD son independientes pero comparten el mismo patrón de señales y la misma recarga (<code>cargar()</code>) al completarse.</p>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Distribuidora Andina SAC — Sistema ERP</strong><br>
+  Diagramas de Arquitectura · Curso Desarrollo de Aplicaciones Web I · CIBERTEC 2025
+</footer>
+
+</body>
+</html>

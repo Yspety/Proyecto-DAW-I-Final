@@ -1,0 +1,241 @@
+
+.mov-filters {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  border-bottom: 0.5px solid #EEF2F8;
+}
+
+.mov-type-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mov-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 0.5px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.mov-pill--all {
+  background-color: #F5F7FA;
+  color: #444441;
+  border-color: #D3D1C7;
+}
+
+.mov-pill--all:hover {
+  background-color: #1B2A4A;
+  color: #E8EEF8;
+  border-color: #1B2A4A;
+}
+
+.mov-pill--entrada {
+  background-color: #EAF3DE;
+  color: #3B6D11;
+  border-color: #C0DD97;
+}
+
+.mov-pill--entrada:hover {
+  background-color: #C0DD97;
+  color: #27500A;
+}
+
+.mov-pill--salida {
+  background-color: #FCEBEB;
+  color: #A32D2D;
+  border-color: #F09595;
+}
+
+.mov-pill--salida:hover {
+  background-color: #F09595;
+  color: #501313;
+}
+
+.mov-pill--ajuste {
+  background-color: #FAEEDA;
+  color: #854F0B;
+  border-color: #FAC775;
+}
+
+.mov-pill--ajuste:hover {
+  background-color: #FAC775;
+  color: #412402;
+}
+
+/* ── Filtro de fechas ─────────────────────────────────────── */
+
+.mov-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.mov-date-input {
+  height: 36px !important;
+  width: 145px !important;
+  font-size: 13px !important;
+  padding: 6px 10px !important;
+}
+
+.mov-date-sep {
+  font-size: 13px;
+  color: #B4B2A9;
+}
+
+.mov-date-btn {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ── Badge con ícono en tabla ─────────────────────────────── */
+
+.mov-badge-tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Cantidad y costo en tabla ────────────────────────────── */
+
+.mov-qty {
+  font-weight: 600;
+  color: #1B2A4A !important;
+  font-size: 13px;
+}
+
+.mov-cost-total {
+  font-weight: 600;
+  color: #2D4A8A !important;
+  font-size: 13px;
+}
+
+/* ── Fila de totales (tfoot) ──────────────────────────────── */
+
+.mov-tfoot td {
+  background-color: #F5F7FA;
+  border-top: 1px solid #D3D1C7 !important;
+  padding: 10px 14px;
+}
+
+.mov-tfoot-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #888780;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mov-tfoot-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1B2A4A;
+}
+
+/* ── Botón Ver ────────────────────────────────────────────── */
+
+.erp-action-btn--view {
+  background-color: #E6F1FB;
+  color: #185FA5;
+  border-color: #B5D4F4;
+}
+
+.erp-action-btn--view:hover {
+  background-color: #B5D4F4;
+  color: #0C447C;
+}
+
+/* ── Caja de info en modal ────────────────────────────────── */
+
+.mov-info-box {
+  background-color: #F5F7FA;
+  border: 0.5px solid #D3D1C7;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mov-info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #444441;
+}
+
+/* ── Grid de 3 columnas para el modal ────────────────────── */
+
+.erp-field-row--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* ── Tabla de detalle en modal ────────────────────────────── */
+
+.mov-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mov-detail-table tr {
+  border-bottom: 0.5px solid #EEF2F8;
+}
+
+.mov-detail-table tr:last-child {
+  border-bottom: none;
+}
+
+.mov-detail-label {
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #888780;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: #F5F7FA;
+  width: 38%;
+  white-space: nowrap;
+}
+
+.mov-detail-value {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #2C2C2A;
+  background-color: #FFFFFF;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .mov-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mov-date-filter {
+    margin-left: 0;
+  }
+
+  .mov-date-input {
+    width: 100% !important;
+  }
+
+  .erp-field-row--3 {
+    grid-template-columns: 1fr;
+  }
+}

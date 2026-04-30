@@ -1,0 +1,222 @@
+<app-navbar />
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <div class="hero-left">
+      <div class="hero-avatar">{{ iniciales }}</div>
+      <div>
+        <div class="hero-role-chip">
+          <span class="hero-role-dot"></span>
+          <span class="hero-role-text">{{ rol }}</span>
+        </div>
+        <h1 class="hero-greeting">{{ saludo }}, <strong>{{ primerNombre }}</strong></h1>
+        <p class="hero-date">{{ fechaFormateada }}</p>
+      </div>
+    </div>
+
+    <div class="hero-status">
+      <span class="pulse-ring">
+        <span class="pulse-core"></span>
+      </span>
+      <span class="hero-status-text">Sistema operativo</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── KPI STRIP ──────────────────────────────────────────── -->
+<div class="kpi-strip">
+  <div class="kpi-grid">
+
+    <div class="kpi-cell">
+      <div class="kpi-label">Módulos</div>
+      <div class="kpi-value kpi-value--navy">{{ moduleCount }}</div>
+      <div class="kpi-sub">del sistema</div>
+    </div>
+
+    <div class="kpi-cell">
+      <div class="kpi-label">Estado</div>
+      <div class="kpi-value kpi-value--green">Activo</div>
+      <div class="kpi-sub">todos los servicios</div>
+    </div>
+
+    <div class="kpi-cell">
+      <div class="kpi-label">Sesión</div>
+      <div class="kpi-name">{{ nombreCompleto }}</div>
+      <div class="kpi-sub">usuario autenticado</div>
+    </div>
+
+    <div class="kpi-cell">
+      <div class="kpi-label">Versión</div>
+      <div class="kpi-value kpi-value--navy">v1.0</div>
+      <div class="kpi-sub">producción estable</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MÓDULOS ──────────────────────────────────────────────── -->
+<div class="modules-wrap">
+
+  <div class="section-sep">
+    <span class="section-sep-label">Acceso rápido</span>
+    <div class="section-sep-line"></div>
+  </div>
+
+  <!-- GESTIÓN -->
+  <div class="group">
+    <div class="group-head">
+      <div class="group-dot" style="background:#1E4ED8;"></div>
+      <span class="group-label-text" style="color:#1E4ED8;">Gestión</span>
+    </div>
+    <div class="cards-4">
+
+      <a routerLink="/almacenes" class="mod-card mod-card--g" style="animation-delay:0.04s;">
+        <div class="mod-icon mod-icon--g">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1E4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="mod-body">
+          <span class="mod-title">Almacenes</span>
+          <span class="mod-desc">Almacenes y ubicaciones</span>
+        </div>
+        <svg class="mod-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+      <a routerLink="/categorias" class="mod-card mod-card--g" style="animation-delay:0.08s;">
+        <div class="mod-icon mod-icon--g">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1E4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="mod-body">
+          <span class="mod-title">Categorías</span>
+          <span class="mod-desc">Clasificación de productos</span>
+        </div>
+        <svg class="mod-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+      <a routerLink="/unidades" class="mod-card mod-card--g" style="animation-delay:0.12s;">
+        <div class="mod-icon mod-icon--g">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1E4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="mod-body">
+          <span class="mod-title">Unidades</span>
+          <span class="mod-desc">Medidas y conversiones</span>
+        </div>
+        <svg class="mod-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+      <a routerLink="/productos" class="mod-card mod-card--g" style="animation-delay:0.16s;">
+        <div class="mod-icon mod-icon--g">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1E4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+        </div>
+        <div class="mod-body">
+          <span class="mod-title">Productos</span>
+          <span class="mod-desc">Catálogo de productos</span>
+        </div>
+        <svg class="mod-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- OPERACIONES -->
+  <div class="group">
+    <div class="group-head">
+      <div class="group-dot" style="background:#0EA5E9;"></div>
+      <span class="group-label-text" style="color:#0EA5E9;">Operaciones</span>
+    </div>
+    <div class="cards-2">
+
+      <a routerLink="/inventario" class="mod-card mod-card--o" style="animation-delay:0.20s;">
+        <div class="mod-icon mod-icon--o">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+            <line x1="12" y1="12" x2="12" y2="16"/>
+            <line x1="10" y1="14" x2="14" y2="14"/>
+          </svg>
+        </div>
+        <div class="mod-body">
+          <span class="mod-title">Inventario</span>
+          <span class="mod-desc">Stock por almacén y alertas de nivel</span>
+        </div>
+        <svg class="mod-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+      <a routerLink="/movimientos" class="mod-card mod-card--o" style="animation-delay:0.24s;">
+        <div class="mod-icon mod-icon--o">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+        </div>
+        <div class="mod-body">
+          <span class="mod-title">Transacciones</span>
+          <span class="mod-desc">Entradas, salidas y ajustes de stock</span>
+        </div>
+        <svg class="mod-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ADMINISTRACIÓN -->
+  @if (isAdmin()) {
+    <div class="group">
+      <div class="group-head">
+        <div class="group-dot" style="background:#DC2626;"></div>
+        <span class="group-label-text" style="color:#DC2626;">Administración</span>
+      </div>
+      <div class="cards-3">
+
+        <a routerLink="/usuarios" class="mod-card mod-card--a" style="position:relative;animation-delay:0.28s;">
+          <span class="admin-badge">Admin</span>
+          <div class="mod-icon mod-icon--a">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="mod-body">
+            <span class="mod-title">Usuarios</span>
+            <span class="mod-desc">Gestión de usuarios y permisos</span>
+          </div>
+          <svg class="mod-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+      </div>
+    </div>
+  }
+
+</div>
+
+<app-footer />

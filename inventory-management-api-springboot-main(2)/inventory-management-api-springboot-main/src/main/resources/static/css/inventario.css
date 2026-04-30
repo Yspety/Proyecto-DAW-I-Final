@@ -1,0 +1,38 @@
+
+.erp-inv-qty {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 6px;
+  min-width: 44px;
+  text-align: center;
+}
+
+.erp-inv-qty--ok {
+  color: #3B6D11;
+  background-color: #EAF3DE;
+}
+
+.erp-inv-qty--low {
+  color: #854F0B;
+  background-color: #FAEEDA;
+}
+
+.erp-inv-qty--critical {
+  color: #A32D2D;
+  background-color: #FCEBEB;
+}
+
+/* ── Alertas de stock (más prominentes que las normales) ───── */
+
+.erp-stock-alert {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
+
+.erp-stock-alert strong {
+  font-weight: 600;
+}

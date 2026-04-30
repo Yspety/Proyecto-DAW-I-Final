@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/header :: header"></head>
+
+<body>
+
+<div th:replace="fragments/header :: navbar"></div>
+<link rel="stylesheet" th:href="@{/css/usuarios.css}">
+
+<main class="erp-page">
+
+  <!-- Alertas -->
+  <div th:if="${mensaje}" class="erp-alert erp-alert-success" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20 6L9 17l-5-5"/></svg>
+    <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" onclick="this.parentElement.remove()" aria-label="Cerrar"></button>
+  </div>
+  <div th:if="${error}" class="erp-alert erp-alert-danger" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" onclick="this.parentElement.remove()" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Cabecera -->
+  <div class="erp-page-header">
+    <div>
+      <h1 class="erp-page-title">Usuarios</h1>
+      <p class="erp-page-subtitle">Administración de accesos y roles del sistema</p>
+    </div>
+    <button type="button" class="erp-btn-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario" onclick="limpiarFormulario()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- Card principal -->
+  <div class="erp-card">
+
+    <!-- Toolbar -->
+    <div class="erp-table-toolbar">
+      <div class="erp-search-wrapper">
+        <svg class="erp-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" class="erp-search-input" placeholder="Buscar por nombre, apellido o usuario..." onkeyup="filtrarTabla()">
+        <button class="erp-search-clear" type="button" onclick="document.getElementById('searchInput').value=''; filtrarTabla();">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <span class="erp-record-count">Total: <strong id="totalRegistros" th:text="${#lists.size(lstUsuarios)}">0</strong></span>
+    </div>
+
+    <!-- Tabla -->
+    <div class="erp-table-responsive">
+      <table class="erp-table" id="tablaUsuarios">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Fecha creación</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${#lists.isEmpty(lstUsuarios)}">
+            <td colspan="8" class="erp-table-empty">No hay usuarios registrados</td>
+          </tr>
+          <tr th:each="usuario : ${lstUsuarios}">
+            <td class="erp-td-id" th:text="${usuario.id}">1</td>
+            <td th:text="${usuario.nombre}">Juan</td>
+            <td th:text="${usuario.apellido}">Pérez</td>
+            <td>
+              <!-- Avatar + username -->
+              <div class="usr-identity">
+                <div class="usr-avatar" th:text="${#strings.toUpperCase(#strings.substring(usuario.nombre, 0, 1)) + #strings.toUpperCase(#strings.substring(usuario.apellido, 0, 1))}">JP</div>
+                <span class="usr-username" th:text="${usuario.usuario}">jperez</span>
+              </div>
+            </td>
+            <td>
+              <span th:if="${usuario.rolDescripcion == 'ADMIN'}" class="erp-badge erp-badge-danger usr-rol-badge">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                [[${usuario.rolDescripcion}]]
+              </span>
+              <span th:if="${usuario.rolDescripcion == 'ALMACENERO'}" class="erp-badge erp-badge-info usr-rol-badge">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm-9 8H7v-2h4v2zm6 0h-4v-2h4v2zM3 5h18v2H3z"/></svg>
+                [[${usuario.rolDescripcion}]]
+              </span>
+            </td>
+            <td>
+              <span th:if="${usuario.activo}" class="erp-badge erp-badge-success">Activo</span>
+              <span th:unless="${usuario.activo}" class="erp-badge erp-badge-neutral">Inactivo</span>
+            </td>
+            <td class="erp-td-date" th:text="${#temporals.format(usuario.creadoEn, 'dd/MM/yyyy HH:mm')}">01/11/2025 10:00</td>
+            <td class="erp-td-actions">
+              <button class="erp-action-btn erp-action-btn--edit btn-editar"
+                      th:data-id="${usuario.id}"
+                      th:data-nombre="${usuario.nombre}"
+                      th:data-apellido="${usuario.apellido}"
+                      th:data-usuario="${usuario.usuario}"
+                      th:data-rol-id="${usuario.rolId}"
+                      th:data-activo="${usuario.activo}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalUsuario">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+              </button>
+              <a th:href="@{/usuarios/eliminar/{id}(id=${usuario.id})}"
+                 class="erp-action-btn erp-action-btn--delete"
+                 onclick="return confirm('¿Está seguro de eliminar este usuario?\n\nUsuario: ' + this.closest('tr').children[3].textContent.trim())">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                Eliminar
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<!-- Modal Crear/Editar -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content erp-modal-content">
+
+      <form id="formUsuario" th:action="@{/usuarios/guardar}" method="post">
+
+        <div class="erp-modal-header">
+          <h5 class="erp-modal-title" id="modalUsuarioLabel">Nuevo Usuario</h5>
+          <button type="button" class="btn-close erp-modal-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="erp-modal-body">
+          <input type="hidden" id="usuarioId" name="id">
+
+          <!-- Nombre + Apellido -->
+          <div class="erp-field-row">
+            <div class="erp-field">
+              <label for="nombre" class="erp-form-label">Nombre <span class="erp-required">*</span></label>
+              <input type="text" class="erp-form-control" id="nombre" name="nombre" required maxlength="50" placeholder="Ej: Juan">
+            </div>
+            <div class="erp-field">
+              <label for="apellido" class="erp-form-label">Apellido <span class="erp-required">*</span></label>
+              <input type="text" class="erp-form-control" id="apellido" name="apellido" required maxlength="50" placeholder="Ej: Pérez">
+            </div>
+          </div>
+
+          <!-- Usuario -->
+          <div class="erp-field">
+            <label for="usuario" class="erp-form-label">Nombre de usuario <span class="erp-required">*</span></label>
+            <input type="text" class="erp-form-control" id="usuario" name="usuario" required maxlength="100" placeholder="Ej: jperez">
+            <small class="erp-field-hint">Nombre único para iniciar sesión</small>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="erp-field" id="divPassword">
+            <label for="password" class="erp-form-label">
+              Contraseña <span class="erp-required" id="requiredPassword">*</span>
+            </label>
+            <input type="password" class="erp-form-control" id="password" name="password" maxlength="255" placeholder="Mínimo 4 caracteres">
+            <small class="erp-field-hint" id="helpPassword">Mínimo 4 caracteres</small>
+          </div>
+
+          <!-- Rol -->
+          <div class="erp-field">
+            <label for="rolId" class="erp-form-label">Rol <span class="erp-required">*</span></label>
+            <select class="erp-form-control erp-select" id="rolId" name="rolId" required>
+              <option value="">Seleccione un rol...</option>
+              <option th:each="rol : ${lstRoles}" th:value="${rol.id}" th:text="${rol.descripcion}">ADMIN</option>
+            </select>
+          </div>
+
+          <!-- Estado -->
+          <div class="erp-field">
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input erp-switch" type="checkbox" id="activo" name="activo" checked>
+              <span class="erp-switch-text">Usuario activo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="erp-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="erp-btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar Usuario
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+  function filtrarTabla() {
+    const filter = document.getElementById('searchInput').value.toUpperCase();
+    const tr = document.getElementById('tablaUsuarios').getElementsByTagName('tr');
+    let count = 0;
+    for (let i = 1; i < tr.length; i++) {
+      const tdNombre   = tr[i].getElementsByTagName('td')[1];
+      const tdApellido = tr[i].getElementsByTagName('td')[2];
+      const tdUsuario  = tr[i].getElementsByTagName('td')[3];
+      if (tdNombre && tdApellido && tdUsuario) {
+        const match =
+          tdNombre.textContent.toUpperCase().includes(filter) ||
+          tdApellido.textContent.toUpperCase().includes(filter) ||
+          tdUsuario.textContent.toUpperCase().includes(filter);
+        tr[i].style.display = match ? '' : 'none';
+        if (match) count++;
+      }
+    }
+    document.getElementById('totalRegistros').textContent = count;
+  }
+
+  function limpiarFormulario() {
+    document.getElementById('formUsuario').action               = '/usuarios/guardar';
+    document.getElementById('modalUsuarioLabel').textContent    = 'Nuevo Usuario';
+    document.getElementById('usuarioId').value                  = '';
+    document.getElementById('nombre').value                     = '';
+    document.getElementById('apellido').value                   = '';
+    document.getElementById('usuario').value                    = '';
+    document.getElementById('password').value                   = '';
+    document.getElementById('password').required                = true;
+    document.getElementById('requiredPassword').style.display   = 'inline';
+    document.getElementById('helpPassword').textContent         = 'Mínimo 4 caracteres';
+    document.getElementById('rolId').value                      = '';
+    document.getElementById('activo').checked                   = true;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-editar').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id       = this.getAttribute('data-id');
+        const nombre   = this.getAttribute('data-nombre');
+        const apellido = this.getAttribute('data-apellido');
+        const usuario  = this.getAttribute('data-usuario');
+        const rolId    = this.getAttribute('data-rol-id');
+        const activo   = this.getAttribute('data-activo') === 'true';
+
+        document.getElementById('formUsuario').action             = '/usuarios/actualizar?id=' + id;
+        document.getElementById('modalUsuarioLabel').textContent  = 'Editar Usuario';
+        document.getElementById('usuarioId').value                = id;
+        document.getElementById('nombre').value                   = nombre;
+        document.getElementById('apellido').value                 = apellido;
+        document.getElementById('usuario').value                  = usuario;
+        document.getElementById('password').value                 = '';
+        document.getElementById('password').required              = false;
+        document.getElementById('requiredPassword').style.display = 'none';
+        document.getElementById('helpPassword').textContent       = 'Dejar en blanco para mantener la contraseña actual';
+        document.getElementById('rolId').value                    = rolId;
+        document.getElementById('activo').checked                 = activo;
+      });
+    });
+
+    setTimeout(function () {
+      document.querySelectorAll('.erp-alert').forEach(function (el) {
+        el.style.transition = 'opacity 0.4s';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 400);
+      });
+    }, 5000);
+  });
+</script>
+
+</body>
+</html>

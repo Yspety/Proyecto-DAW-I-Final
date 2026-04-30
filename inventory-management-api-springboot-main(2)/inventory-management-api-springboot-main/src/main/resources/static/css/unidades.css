@@ -1,0 +1,76 @@
+
+.unidad-codigo-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background-color: #1B2A4A;
+  color: #8FA8D0;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-family: 'DM Mono', 'Courier New', monospace;
+}
+
+/* ── Factor base en tabla ─────────────────────────────────── */
+
+.unidad-factor {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5F5E5A;
+  background-color: #F1EFE8;
+  border: 0.5px solid #D3D1C7;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-family: 'DM Mono', 'Courier New', monospace;
+}
+
+/* ── Bloque de ejemplos en modal ──────────────────────────── */
+
+.unidad-ejemplos {
+  background-color: #F5F7FA;
+  border: 0.5px solid #D3D1C7;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.unidad-ejemplo-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #888780;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 10px;
+}
+
+.unidad-ejemplo-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unidad-ejemplo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.unidad-ejemplo-code {
+  display: inline-block;
+  padding: 2px 10px;
+  background-color: #1B2A4A;
+  color: #8FA8D0;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  min-width: 52px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.unidad-ejemplo-desc {
+  font-size: 13px;
+  color: #888780;
+}

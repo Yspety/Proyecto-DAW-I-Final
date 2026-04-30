@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spring Security — Diagrama Paso a Paso</title>
+  <style>
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #334155; --surface3: #475569;
+      --accent: #38bdf8; --green: #4ade80; --yellow: #facc15; --red: #f87171;
+      --orange: #fb923c; --purple: #a78bfa; --pink: #f472b6;
+      --text: #e2e8f0; --muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    .header {
+      background: linear-gradient(135deg, #1a0a2e 0%, #0f172a 100%);
+      padding: 2.5rem 2rem; text-align: center;
+      border-bottom: 3px solid var(--purple);
+    }
+    .header h1 { font-size: 2.2rem; color: var(--purple); margin-bottom: 0.3rem; }
+    .header p  { color: var(--muted); font-size: 1rem; }
+    .nav-back {
+      display: inline-block; margin-top: 1rem;
+      color: var(--accent); text-decoration: none; font-size: 0.88rem;
+    }
+    .nav-back:hover { text-decoration: underline; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+    .section-title {
+      font-size: 1.35rem; color: var(--purple); margin: 3rem 0 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--surface2);
+    }
+
+    /* Info callout */
+    .callout {
+      border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0;
+      border-left: 4px solid;
+    }
+    .callout.info   { background: rgba(56,189,248,0.07); border-color: var(--accent); }
+    .callout.warn   { background: rgba(251,146,60,0.07); border-color: var(--orange); }
+    .callout.tip    { background: rgba(74,222,128,0.07); border-color: var(--green); }
+    .callout.danger { background: rgba(248,113,113,0.07); border-color: var(--red); }
+    .callout-title  { font-weight: bold; margin-bottom: 0.4rem; }
+    .callout.info   .callout-title { color: var(--accent); }
+    .callout.warn   .callout-title { color: var(--orange); }
+    .callout.tip    .callout-title { color: var(--green); }
+    .callout.danger .callout-title { color: var(--red); }
+    .callout p { font-size: 0.9rem; color: var(--muted); }
+    .callout code { font-family: 'Consolas', monospace; background: var(--surface2); padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.83em; color: var(--green); }
+
+    /* Filter Chain Diagram */
+    .chain-diagram {
+      display: flex; gap: 1.5rem; margin: 1.5rem 0; flex-wrap: wrap;
+    }
+    .chain-box {
+      flex: 1; min-width: 280px; background: var(--surface); border-radius: 12px;
+      border: 2px solid; padding: 1.5rem; position: relative;
+    }
+    .chain-box.api-chain  { border-color: var(--red); }
+    .chain-box.mvc-chain  { border-color: var(--accent); }
+    .chain-badge {
+      position: absolute; top: -0.85rem; left: 1.2rem;
+      font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.75rem;
+      border-radius: 9999px;
+    }
+    .chain-box.api-chain .chain-badge { background: var(--red); color: #fff; }
+    .chain-box.mvc-chain .chain-badge { background: var(--accent); color: #000; }
+    .chain-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 1rem; }
+    .chain-box.api-chain .chain-title { color: var(--red); }
+    .chain-box.mvc-chain .chain-title { color: var(--accent); }
+    .chain-prop { display: flex; justify-content: space-between; align-items: center; margin: 0.4rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--surface2); padding-bottom: 0.4rem; }
+    .chain-prop:last-of-type { border-bottom: none; }
+    .prop-key   { color: var(--muted); }
+    .prop-val   { font-family: 'Consolas', monospace; font-size: 0.82rem; }
+    .val-green  { color: var(--green); }
+    .val-red    { color: var(--red); }
+    .val-yellow { color: var(--yellow); }
+    .val-orange { color: var(--orange); }
+
+    /* Step Flow */
+    .step-flow { margin: 1.5rem 0; }
+    .step {
+      display: flex; gap: 1.25rem; margin-bottom: 1.5rem;
+      background: var(--surface); border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--surface2);
+    }
+    .step-number {
+      min-width: 56px; display: flex; align-items: flex-start; justify-content: center;
+      padding: 1.25rem 0; font-size: 1.6rem; font-weight: bold;
+      background: var(--surface2);
+    }
+    .step-body { flex: 1; padding: 1.25rem 1.25rem 1.25rem 0; }
+    .step-title { font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; }
+    .step-desc  { font-size: 0.88rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .step-code  {
+      background: #0d1117; border: 1px solid var(--surface2); border-radius: 6px;
+      padding: 1rem; font-family: 'Consolas', 'Courier New', monospace; font-size: 0.82rem;
+      overflow-x: auto; line-height: 1.6;
+    }
+    .step-badge {
+      display: inline-block; font-size: 0.72rem; padding: 0.15rem 0.55rem;
+      border-radius: 4px; font-weight: bold; margin-left: 0.5rem; vertical-align: middle;
+    }
+    /* Step colors */
+    .step.s-client   .step-number { color: var(--purple); }
+    .step.s-filter   .step-number { color: var(--red); }
+    .step.s-decode   .step-number { color: var(--orange); }
+    .step.s-service  .step-number { color: var(--yellow); }
+    .step.s-entity   .step-number { color: var(--green); }
+    .step.s-bcrypt   .step-number { color: var(--pink); }
+    .step.s-context  .step-number { color: var(--accent); }
+    .step.s-ctrl     .step-number { color: var(--accent); }
+    .step.s-response .step-number { color: var(--green); }
+
+    .step.s-client   { border-color: var(--purple); }
+    .step.s-filter   { border-color: var(--red); }
+    .step.s-decode   { border-color: var(--orange); }
+    .step.s-service  { border-color: var(--yellow); }
+    .step.s-entity   { border-color: var(--green); }
+    .step.s-bcrypt   { border-color: var(--pink); }
+    .step.s-context  { border-color: var(--accent); }
+    .step.s-ctrl     { border-color: var(--accent); }
+    .step.s-response { border-color: var(--green); }
+
+    .step.s-client   .step-title { color: var(--purple); }
+    .step.s-filter   .step-title { color: var(--red); }
+    .step.s-decode   .step-title { color: var(--orange); }
+    .step.s-service  .step-title { color: var(--yellow); }
+    .step.s-entity   .step-title { color: var(--green); }
+    .step.s-bcrypt   .step-title { color: var(--pink); }
+    .step.s-context  .step-title { color: var(--accent); }
+    .step.s-ctrl     .step-title { color: var(--accent); }
+    .step.s-response .step-title { color: var(--green); }
+
+    /* Code syntax highlighting helpers */
+    .c-kw    { color: #f472b6; }   /* keyword */
+    .c-cls   { color: #fbbf24; }   /* class name */
+    .c-fn    { color: #60a5fa; }   /* function/method */
+    .c-str   { color: #a3e635; }   /* string */
+    .c-ann   { color: #c084fc; }   /* annotation */
+    .c-num   { color: #fb923c; }   /* number */
+    .c-cm    { color: #6b7280; font-style: italic; }  /* comment */
+    .c-var   { color: #e2e8f0; }   /* variable */
+    .c-bool  { color: #4ade80; }   /* boolean */
+
+    /* Error flow */
+    .error-flow {
+      background: rgba(248,113,113,0.07); border: 1px solid var(--red);
+      border-radius: 10px; padding: 1.5rem; margin: 1.5rem 0;
+    }
+    .error-flow h3 { color: var(--red); margin-bottom: 1rem; font-size: 1.05rem; }
+    .error-step { display: flex; gap: 0.75rem; margin: 0.6rem 0; font-size: 0.88rem; }
+    .error-num  {
+      min-width: 24px; height: 24px; background: var(--red); color: #fff;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: bold; flex-shrink: 0; margin-top: 0.1rem;
+    }
+
+    /* Migration Runner */
+    .migration-flow {
+      background: var(--surface); border-radius: 10px; border: 1px solid var(--surface2);
+      padding: 1.5rem; margin: 1.5rem 0;
+    }
+    .migration-flow h3 { color: var(--orange); margin-bottom: 1rem; }
+
+    /* Security Context visual */
+    .context-visual {
+      background: var(--surface); border-radius: 10px; border: 2px solid var(--accent);
+      padding: 1.5rem; margin: 1.5rem 0; text-align: center;
+    }
+    .context-visual h3 { color: var(--accent); margin-bottom: 1rem; }
+    .ctx-box {
+      display: inline-block; background: var(--surface2); border-radius: 8px;
+      padding: 1rem 2rem; margin: 0.5rem; text-align: left;
+    }
+    .ctx-box .ctx-title { color: var(--accent); font-weight: bold; font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .ctx-box .ctx-item  { font-family: 'Consolas', monospace; font-size: 0.82rem; color: var(--muted); }
+    .ctx-box .ctx-val   { color: var(--green); }
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace; background: var(--surface2);
+      padding: 0.1rem 0.45rem; border-radius: 4px; font-size: 0.84em; color: var(--green);
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+    @media(max-width:700px) { .two-col { grid-template-columns: 1fr; } }
+
+    .pill {
+      display: inline-block; padding: 0.2rem 0.65rem; border-radius: 9999px;
+      font-size: 0.78rem; font-weight: bold; margin: 0.15rem;
+    }
+    .pill-red    { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+    .pill-green  { background: rgba(74,222,128,0.15);  color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+    .pill-accent { background: rgba(56,189,248,0.15);  color: var(--accent); border: 1px solid rgba(56,189,248,0.3); }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted); font-size: 0.85rem;
+      border-top: 1px solid var(--surface2); margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#128274; Spring Security — Diagrama Completo</h1>
+  <p>Cómo funciona la autenticación paso a paso a través del código fuente</p>
+  <a href="index.html" class="nav-back">&#8592; Volver al índice</a>
+</div>
+
+<div class="container">
+
+  <!-- ========== SECCIÓN 1: INTRODUCCIÓN ========== -->
+  <h2 class="section-title">&#128736; ¿Qué es Spring Security en este proyecto?</h2>
+
+  <div class="callout info">
+    <div class="callout-title">Concepto clave</div>
+    <p>Spring Security es un framework que actúa como <strong>guardián</strong> de todas las peticiones HTTP antes de que lleguen a los controllers. Intercepta cada request, verifica si el usuario tiene credenciales válidas y, solo si pasa la verificación, permite que la petición continúe. En este proyecto se usan <strong>dos cadenas de filtros</strong> independientes: una para la API REST y otra para la interfaz web MVC.</p>
+  </div>
+
+  <!-- ========== SECCIÓN 2: DOS FILTER CHAINS ========== -->
+  <h2 class="section-title">&#128279; Los Dos Filter Chains (SecurityConfig.java)</h2>
+  <p style="color:var(--muted); margin-bottom:1rem;">
+    La clase <code>SecurityConfig.java</code> define dos cadenas de seguridad con <code>@Order</code>.
+    Spring Security evalúa la orden de menor a mayor y usa la <strong>primera que coincida</strong> con la ruta del request.
+  </p>
+
+  <div class="chain-diagram">
+    <div class="chain-box api-chain">
+      <div class="chain-badge">@Order(1) — Primero</div>
+      <div class="chain-title">&#128308; API Filter Chain</div>
+      <div class="chain-prop"><span class="prop-key">Ruta que cubre</span><span class="prop-val val-yellow">/api/**</span></div>
+      <div class="chain-prop"><span class="prop-key">Tipo de auth</span><span class="prop-val val-orange">HTTP Basic Auth</span></div>
+      <div class="chain-prop"><span class="prop-key">Sesión</span><span class="prop-val val-red">STATELESS (sin sesión)</span></div>
+      <div class="chain-prop"><span class="prop-key">CSRF</span><span class="prop-val val-red">Deshabilitado</span></div>
+      <div class="chain-prop"><span class="prop-key">Acceso sin auth</span><span class="prop-val val-red">Ninguno → 401</span></div>
+      <div class="chain-prop"><span class="prop-key">Uso</span><span class="prop-val val-green">Frontend Angular, Postman, cURL</span></div>
+    </div>
+
+    <div class="chain-box mvc-chain">
+      <div class="chain-badge">@Order(2) — Segundo (comentado)</div>
+      <div class="chain-title">&#128309; MVC Filter Chain</div>
+      <div class="chain-prop"><span class="prop-key">Ruta que cubre</span><span class="prop-val val-yellow">/** (todo lo demás)</span></div>
+      <div class="chain-prop"><span class="prop-key">Tipo de auth</span><span class="prop-val val-orange">Form Login (/login)</span></div>
+      <div class="chain-prop"><span class="prop-key">Sesión</span><span class="prop-val val-green">STATEFUL (con sesión HTTP)</span></div>
+      <div class="chain-prop"><span class="prop-key">CSRF</span><span class="prop-val val-green">Habilitado (via Thymeleaf)</span></div>
+      <div class="chain-prop"><span class="prop-key">Acceso sin auth</span><span class="prop-val val-yellow">/login, /css/**, /js/** permitidos</span></div>
+      <div class="chain-prop"><span class="prop-key">Uso</span><span class="prop-val val-green">Interfaz web Thymeleaf (navegador)</span></div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Nota: MVC Chain comentada</div>
+    <p>En el código actual, el MVC Filter Chain está comentado (<code>/* ... */</code>). Esto significa que actualmente solo el API REST está protegido con Spring Security. La interfaz web MVC no aplica el form-login por código, aunque el código está preparado para activarse cuando se necesite.</p>
+  </div>
+
+  <!-- ========== SECCIÓN 3: FLUJO PASO A PASO ========== -->
+  <h2 class="section-title">&#128260; Flujo Completo: HTTP Basic Auth paso a paso</h2>
+  <p style="color:var(--muted); margin-bottom:1.5rem;">
+    Ejemplo real: el frontend Angular hace <code>GET /api/productos</code> con credenciales <code>admin:admin</code>.
+    Aquí está lo que sucede dentro de Spring Security, línea por línea en cada clase.
+  </p>
+
+  <div class="step-flow">
+
+    <!-- PASO 1 -->
+    <div class="step s-client">
+      <div class="step-number">1</div>
+      <div class="step-body">
+        <div class="step-title">Cliente (Angular) envía la petición HTTP</div>
+        <div class="step-desc">
+          El frontend construye el header <code>Authorization</code> codificando las credenciales en Base64.
+          La cadena <code>admin:admin</code> codificada en Base64 es <code>YWRtaW46YWRtaW4=</code>.
+          Este header se agrega automáticamente por el <code>BasicAuthInterceptor</code> de Angular en cada request.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// HTTP Request que sale del frontend Angular</span>
+GET /api/productos HTTP/1.1
+Host: localhost:8080
+<span class="c-kw">Authorization</span>: Basic <span class="c-str">YWRtaW46YWRtaW4=</span>  <span class="c-cm">← Base64("admin:admin")</span>
+Accept: application/json
+Content-Type: application/json
+
+<span class="c-cm">// ¿Cómo se forma YWRtaW46YWRtaW4=?</span>
+<span class="c-cm">// btoa("admin:admin") → "YWRtaW46YWRtaW4="   (función JS)</span>
+<span class="c-cm">// Base64.encode("admin:admin") → "YWRtaW46YWRtaW4="  (Java)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="step s-filter">
+      <div class="step-number">2</div>
+      <div class="step-body">
+        <div class="step-title">FilterChainProxy selecciona el chain correcto</div>
+        <div class="step-desc">
+          El componente central de Spring Security, <code>FilterChainProxy</code>, recibe el request.
+          Evalúa qué cadena aplica: la ruta es <code>/api/productos</code>, que coincide con el patrón
+          <code>/api/**</code> del chain de <code>@Order(1)</code>. Usa ese chain y no evalúa el @Order(2).
+        </div>
+        <div class="step-code">
+<span class="c-cm">// SecurityConfig.java — Spring selecciona este bean porque la ruta es /api/**</span>
+<span class="c-ann">@Bean</span>
+<span class="c-ann">@Order(1)</span>
+<span class="c-kw">public</span> <span class="c-cls">SecurityFilterChain</span> <span class="c-fn">apiFilterChain</span>(<span class="c-cls">HttpSecurity</span> http) <span class="c-kw">throws</span> <span class="c-cls">Exception</span> {
+    http
+        .<span class="c-fn">securityMatcher</span>(<span class="c-str">"/api/**"</span>)           <span class="c-cm">← ✅ /api/productos coincide</span>
+        .<span class="c-fn">authorizeHttpRequests</span>(auth -> auth
+            .<span class="c-fn">anyRequest</span>().<span class="c-fn">authenticated</span>()    <span class="c-cm">← toda ruta requiere auth</span>
+        )
+        .<span class="c-fn">httpBasic</span>(<span class="c-cls">Customizer</span>.<span class="c-fn">withDefaults</span>())   <span class="c-cm">← activa BasicAuthenticationFilter</span>
+        .<span class="c-fn">csrf</span>(csrf -> csrf.<span class="c-fn">disable</span>())          <span class="c-cm">← no se necesita token CSRF</span>
+        .<span class="c-fn">sessionManagement</span>(sm -> sm
+            .<span class="c-fn">sessionCreationPolicy</span>(<span class="c-cls">SessionCreationPolicy</span>.<span class="c-bool">STATELESS</span>) <span class="c-cm">← sin sesión</span>
+        );
+    <span class="c-kw">return</span> http.<span class="c-fn">build</span>();
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="step s-decode">
+      <div class="step-number">3</div>
+      <div class="step-body">
+        <div class="step-title">BasicAuthenticationFilter extrae y decodifica las credenciales</div>
+        <div class="step-desc">
+          El filtro <code>BasicAuthenticationFilter</code> (interno de Spring Security) lee el header
+          <code>Authorization</code>, verifica que empiece con <code>"Basic "</code>, y decodifica el
+          Base64 para obtener el <strong>usuario</strong> y <strong>contraseña</strong> separados por <code>:</code>.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// Lógica interna de BasicAuthenticationFilter (Spring Security lo hace automáticamente)</span>
+
+<span class="c-cls">String</span> header = request.<span class="c-fn">getHeader</span>(<span class="c-str">"Authorization"</span>);
+<span class="c-cm">// header = "Basic YWRtaW46YWRtaW4="</span>
+
+<span class="c-cls">String</span> base64Credentials = header.<span class="c-fn">substring</span>(<span class="c-num">6</span>);  <span class="c-cm">← quita "Basic "</span>
+<span class="c-cm">// base64Credentials = "YWRtaW46YWRtaW4="</span>
+
+<span class="c-cls">String</span> decoded = <span class="c-kw">new</span> <span class="c-cls">String</span>(<span class="c-cls">Base64</span>.<span class="c-fn">decode</span>(base64Credentials));
+<span class="c-cm">// decoded = "admin:admin"</span>
+
+<span class="c-cls">String</span>[] parts = decoded.<span class="c-fn">split</span>(<span class="c-str">":"</span>, <span class="c-num">2</span>);
+<span class="c-cls">String</span> username = parts[<span class="c-num">0</span>];  <span class="c-cm">// "admin"</span>
+<span class="c-cls">String</span> password = parts[<span class="c-num">1</span>];  <span class="c-cm">// "admin"</span>
+
+<span class="c-cm">// Crea el token de autenticación (aún NO autenticado — solo lleva las credenciales)</span>
+<span class="c-cls">UsernamePasswordAuthenticationToken</span> authToken =
+    <span class="c-kw">new</span> <span class="c-cls">UsernamePasswordAuthenticationToken</span>(username, password);
+
+<span class="c-cm">// Pasa el token al AuthenticationManager para que lo verifique</span>
+<span class="c-cls">Authentication</span> result = authenticationManager.<span class="c-fn">authenticate</span>(authToken);
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div class="step s-service">
+      <div class="step-number">4</div>
+      <div class="step-body">
+        <div class="step-title">DaoAuthenticationProvider llama a UserDetailsServiceImpl</div>
+        <div class="step-desc">
+          El <code>AuthenticationManager</code> delega en <code>DaoAuthenticationProvider</code> (implementación
+          por defecto de Spring Security). Este provider llama a <code>loadUserByUsername("admin")</code>
+          de nuestra clase <code>UserDetailsServiceImpl</code> para buscar el usuario en la base de datos.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// UserDetailsServiceImpl.java — nuestra implementación</span>
+<span class="c-ann">@Service</span>
+<span class="c-ann">@RequiredArgsConstructor</span>
+<span class="c-kw">public class</span> <span class="c-cls">UserDetailsServiceImpl</span> <span class="c-kw">implements</span> <span class="c-cls">UserDetailsService</span> {
+
+    <span class="c-kw">private final</span> <span class="c-cls">UsuarioRepository</span> usuarioRepository;
+
+    <span class="c-ann">@Override</span>
+    <span class="c-ann">@Transactional(readOnly = true)</span>   <span class="c-cm">← abre transacción JPA</span>
+    <span class="c-kw">public</span> <span class="c-cls">UserDetails</span> <span class="c-fn">loadUserByUsername</span>(<span class="c-cls">String</span> username)
+            <span class="c-kw">throws</span> <span class="c-cls">UsernameNotFoundException</span> {
+
+        <span class="c-cm">// Busca el usuario en la tabla "Usuario" por campo "usuario"</span>
+        <span class="c-cls">Usuario</span> usuario = usuarioRepository.<span class="c-fn">findByUsuario</span>(username)
+            .<span class="c-fn">orElseThrow</span>(() ->
+                <span class="c-kw">new</span> <span class="c-cls">UsernameNotFoundException</span>(<span class="c-str">"Usuario no encontrado: "</span> + username)
+            );
+        <span class="c-cm">// Si no existe → Spring Security retorna 401 automáticamente</span>
+
+        <span class="c-kw">return new</span> <span class="c-cls">UsuarioPrincipal</span>(usuario);  <span class="c-cm">← crea el principal dentro de @Transactional</span>
+    }
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 4b: SQL -->
+    <div class="step s-service">
+      <div class="step-number">4b</div>
+      <div class="step-body">
+        <div class="step-title">JPA ejecuta la consulta SQL en MySQL</div>
+        <div class="step-desc">
+          El método <code>usuarioRepository.findByUsuario("admin")</code> hace que Spring Data JPA
+          genere y ejecute automáticamente la siguiente consulta SQL en la base de datos <code>erp_productos</code>:
+        </div>
+        <div class="step-code">
+<span class="c-cm">-- SQL generado por Spring Data JPA (UsuarioRepository)</span>
+SELECT
+    u.idusu,
+    u.nombre,
+    u.apellido,
+    u.usuario,
+    u.password,      <span class="c-cm">← el hash BCrypt, ej: "$2a$10$Xyz..."</span>
+    u.activo,
+    u.creado_en,
+    u.idrol,
+    r.idrol,
+    r.descripcion    <span class="c-cm">← "ADMIN" o "ALMACENERO"</span>
+FROM Usuario u
+INNER JOIN Rol r ON u.idrol = r.idrol
+WHERE u.usuario = <span class="c-str">'admin'</span>
+LIMIT 1;
+
+<span class="c-cm">-- Resultado que devuelve la DB:</span>
+<span class="c-cm">-- idusu=1, nombre="Juan", apellido="Pérez", usuario="admin"</span>
+<span class="c-cm">-- password="$2a$10$hKZdsMlFkdjhQ2kJMO1...", activo=1, idrol=1, descripcion="ADMIN"</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 5 -->
+    <div class="step s-entity">
+      <div class="step-number">5</div>
+      <div class="step-body">
+        <div class="step-title">UsuarioPrincipal se construye (dentro de la transacción JPA)</div>
+        <div class="step-desc">
+          El constructor de <code>UsuarioPrincipal</code> extrae <strong>todos</strong> los campos del entity
+          <code>Usuario</code> inmediatamente, mientras la transacción JPA sigue abierta. Esto es crítico:
+          la relación <code>usuario.getRol()</code> es <code>LAZY</code> (se carga bajo demanda).
+          Si se accediera fuera de la transacción lanzaría <code>LazyInitializationException</code>.
+          Al extraer todo en el constructor, se evita ese problema.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// UsuarioPrincipal.java — implementa UserDetails de Spring Security</span>
+<span class="c-kw">public class</span> <span class="c-cls">UsuarioPrincipal</span> <span class="c-kw">implements</span> <span class="c-cls">UserDetails</span> {
+
+    <span class="c-kw">private final</span> <span class="c-cls">Integer</span> id;
+    <span class="c-kw">private final</span> <span class="c-cls">String</span>  username;
+    <span class="c-kw">private final</span> <span class="c-cls">String</span>  password;       <span class="c-cm">← hash BCrypt</span>
+    <span class="c-kw">private final</span> <span class="c-cls">boolean</span> activo;
+    <span class="c-kw">private final</span> <span class="c-cls">String</span>  nombre;
+    <span class="c-kw">private final</span> <span class="c-cls">String</span>  apellido;
+    <span class="c-kw">private final</span> <span class="c-cls">String</span>  rolDescripcion;
+
+    <span class="c-kw">public</span> <span class="c-fn">UsuarioPrincipal</span>(<span class="c-cls">Usuario</span> usuario) {
+        <span class="c-kw">this</span>.id             = usuario.<span class="c-fn">getId</span>();
+        <span class="c-kw">this</span>.username       = usuario.<span class="c-fn">getUsuario</span>();
+        <span class="c-kw">this</span>.password       = usuario.<span class="c-fn">getPassword</span>();
+        <span class="c-kw">this</span>.activo         = usuario.<span class="c-fn">getActivo</span>();
+        <span class="c-kw">this</span>.nombre         = usuario.<span class="c-fn">getNombre</span>();
+        <span class="c-kw">this</span>.apellido       = usuario.<span class="c-fn">getApellido</span>();
+        <span class="c-kw">this</span>.rolDescripcion = usuario.<span class="c-fn">getRol</span>().<span class="c-fn">getDescripcion</span>();
+        <span class="c-cm">//                     ↑ LAZY pero OK: estamos dentro de @Transactional</span>
+    }
+
+    <span class="c-ann">@Override</span>
+    <span class="c-kw">public</span> <span class="c-cls">Collection</span>&lt;<span class="c-kw">?</span> <span class="c-kw">extends</span> <span class="c-cls">GrantedAuthority</span>&gt; <span class="c-fn">getAuthorities</span>() {
+        <span class="c-cm">// Convierte "ADMIN" → GrantedAuthority "ROLE_ADMIN"</span>
+        <span class="c-kw">return</span> <span class="c-cls">List</span>.<span class="c-fn">of</span>(<span class="c-kw">new</span> <span class="c-cls">SimpleGrantedAuthority</span>(<span class="c-str">"ROLE_"</span> + rolDescripcion));
+    }
+
+    <span class="c-ann">@Override</span> <span class="c-kw">public boolean</span> <span class="c-fn">isEnabled</span>()               { <span class="c-kw">return</span> activo; }
+    <span class="c-ann">@Override</span> <span class="c-kw">public boolean</span> <span class="c-fn">isAccountNonExpired</span>()   { <span class="c-kw">return true</span>; }
+    <span class="c-ann">@Override</span> <span class="c-kw">public boolean</span> <span class="c-fn">isAccountNonLocked</span>()    { <span class="c-kw">return true</span>; }
+    <span class="c-ann">@Override</span> <span class="c-kw">public boolean</span> <span class="c-fn">isCredentialsNonExpired</span>(){ <span class="c-kw">return true</span>; }
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 6 -->
+    <div class="step s-bcrypt">
+      <div class="step-number">6</div>
+      <div class="step-body">
+        <div class="step-title">BCryptPasswordEncoder verifica la contraseña</div>
+        <div class="step-desc">
+          <code>DaoAuthenticationProvider</code> llama a <code>passwordEncoder.matches()</code>
+          para comparar la contraseña en texto plano <code>"admin"</code> con el hash BCrypt
+          guardado en la base de datos. BCrypt es un algoritmo de hash <strong>unidireccional</strong>:
+          nunca se puede revertir el hash. En cambio, el algoritmo re-hashea la contraseña ingresada
+          con el mismo "salt" que usó el hash original, y compara los resultados.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// BCryptPasswordEncoder (definido como @Bean en SecurityConfig.java)</span>
+<span class="c-ann">@Bean</span>
+<span class="c-kw">public</span> <span class="c-cls">PasswordEncoder</span> <span class="c-fn">passwordEncoder</span>() {
+    <span class="c-kw">return new</span> <span class="c-cls">BCryptPasswordEncoder</span>();
+}
+
+<span class="c-cm">// Lo que hace DaoAuthenticationProvider internamente:</span>
+<span class="c-cls">String</span> rawPassword     = <span class="c-str">"admin"</span>;                  <span class="c-cm">← lo que escribió el usuario</span>
+<span class="c-cls">String</span> storedHash     = <span class="c-str">"$2a$10$hKZdsMlFk..."</span>;      <span class="c-cm">← guardado en DB</span>
+
+<span class="c-kw">boolean</span> match = passwordEncoder.<span class="c-fn">matches</span>(rawPassword, storedHash);
+<span class="c-cm">// ↑ BCrypt re-hashea "admin" con el mismo salt del storedHash</span>
+<span class="c-cm">//   Si el resultado coincide → match = true → AUTENTICADO</span>
+<span class="c-cm">//   Si no coincide           → match = false → BadCredentialsException → 401</span>
+
+<span class="c-cm">// Anatomía del hash BCrypt: $2a$10$hKZdsMlFkdjhQ2kJMO1xyz...</span>
+<span class="c-cm">//   $2a$   → versión del algoritmo</span>
+<span class="c-cm">//   10     → "cost factor" (2^10 = 1024 rondas de hashing)</span>
+<span class="c-cm">//   hKZds  → salt (22 caracteres, aleatório por registro)</span>
+<span class="c-cm">//   MlFk.. → hash resultado (31 caracteres)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 7 -->
+    <div class="step s-context">
+      <div class="step-number">7</div>
+      <div class="step-body">
+        <div class="step-title">SecurityContextHolder almacena la autenticación (sin sesión)</div>
+        <div class="step-desc">
+          Si BCrypt confirma que la contraseña es correcta, Spring Security almacena el objeto
+          <code>Authentication</code> en el <code>SecurityContextHolder</code> para este thread.
+          Como la cadena API está configurada como <code>STATELESS</code>, <strong>no se crea ninguna sesión HTTP</strong>.
+          El SecurityContext solo vive durante este request y se limpia al terminar.
+          En el próximo request, el cliente deberá enviar las credenciales nuevamente.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// Spring Security hace esto internamente después de verificar BCrypt:</span>
+<span class="c-cls">UsernamePasswordAuthenticationToken</span> autenticado =
+    <span class="c-kw">new</span> <span class="c-cls">UsernamePasswordAuthenticationToken</span>(
+        usuarioPrincipal,          <span class="c-cm">← el UsuarioPrincipal que creamos</span>
+        <span class="c-kw">null</span>,                      <span class="c-cm">← credenciales se limpian por seguridad</span>
+        usuarioPrincipal.<span class="c-fn">getAuthorities</span>()  <span class="c-cm">← [ROLE_ADMIN]</span>
+    );
+
+<span class="c-cls">SecurityContextHolder</span>.<span class="c-fn">getContext</span>().<span class="c-fn">setAuthentication</span>(autenticado);
+
+<span class="c-cm">// Estado del SecurityContext en este momento:</span>
+<span class="c-cm">// {</span>
+<span class="c-cm">//   authenticated: true</span>
+<span class="c-cm">//   principal: UsuarioPrincipal { id=1, username="admin", rol="ADMIN", ... }</span>
+<span class="c-cm">//   authorities: ["ROLE_ADMIN"]</span>
+<span class="c-cm">// }</span>
+
+<span class="c-cm">// NO se crea JSESSIONID (STATELESS) — cada request repite los pasos 1-7</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 8 -->
+    <div class="step s-ctrl">
+      <div class="step-number">8</div>
+      <div class="step-body">
+        <div class="step-title">DispatcherServlet enruta al ProductoRestController</div>
+        <div class="step-desc">
+          Con la autenticación verificada, Spring Security deja pasar el request.
+          El <code>DispatcherServlet</code> lo enruta al método correspondiente del controller.
+          Si el endpoint requiere rol ADMIN (como <code>/api/usuarios</code>), Spring Security
+          verifica que <code>UsuarioPrincipal.getAuthorities()</code> contenga <code>ROLE_ADMIN</code>
+          antes de entrar al método. Para <code>/api/productos</code> cualquier usuario autenticado puede acceder.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// ProductoRestController.java</span>
+<span class="c-ann">@RestController</span>
+<span class="c-ann">@RequestMapping</span>(<span class="c-str">"/api/productos"</span>)
+<span class="c-kw">public class</span> <span class="c-cls">ProductoRestController</span> {
+
+    <span class="c-kw">private final</span> <span class="c-cls">ProductoService</span> productoService;
+
+    <span class="c-ann">@GetMapping</span>
+    <span class="c-kw">public</span> <span class="c-cls">ResponseEntity</span>&lt;<span class="c-cls">Map</span>&lt;<span class="c-cls">String</span>, <span class="c-cls">Object</span>&gt;&gt; <span class="c-fn">listar</span>() {
+        <span class="c-cm">// Spring Security ya verificó las credenciales — llegamos aquí autenticados</span>
+        <span class="c-cls">List</span>&lt;<span class="c-cls">ProductoResponseDto</span>&gt; productos = productoService.<span class="c-fn">listar</span>();
+
+        <span class="c-cls">Map</span>&lt;<span class="c-cls">String</span>, <span class="c-cls">Object</span>&gt; response = <span class="c-kw">new</span> <span class="c-cls">HashMap</span>&lt;&gt;();
+        response.<span class="c-fn">put</span>(<span class="c-str">"success"</span>, <span class="c-bool">true</span>);
+        response.<span class="c-fn">put</span>(<span class="c-str">"message"</span>, <span class="c-str">"Productos listados correctamente"</span>);
+        response.<span class="c-fn">put</span>(<span class="c-str">"data"</span>, productos);
+        response.<span class="c-fn">put</span>(<span class="c-str">"total"</span>, productos.<span class="c-fn">size</span>());
+        <span class="c-kw">return</span> <span class="c-cls">ResponseEntity</span>.<span class="c-fn">ok</span>(response);
+    }
+}
+
+<span class="c-cm">// Acceso ADMIN-only (como en UsuarioRestController.java):</span>
+<span class="c-ann">@GetMapping</span>
+<span class="c-ann">@PreAuthorize</span>(<span class="c-str">"hasRole('ADMIN')"</span>)   <span class="c-cm">← Spring verifica ROLE_ADMIN antes de entrar</span>
+<span class="c-kw">public</span> <span class="c-cls">ResponseEntity</span>&lt;...&gt; <span class="c-fn">listar</span>() { ... }
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 9 -->
+    <div class="step s-response">
+      <div class="step-number">9</div>
+      <div class="step-body">
+        <div class="step-title">Respuesta JSON vuelve al cliente</div>
+        <div class="step-desc">
+          El controller construye el envelope de respuesta y lo serializa a JSON via Jackson.
+          Spring Security limpia el <code>SecurityContext</code> del thread después del response (STATELESS).
+          El cliente Angular recibe el JSON y lo procesa.
+        </div>
+        <div class="step-code">
+<span class="c-cm">// HTTP Response que recibe el frontend Angular</span>
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  <span class="c-str">"success"</span>: <span class="c-bool">true</span>,
+  <span class="c-str">"message"</span>: <span class="c-str">"Productos listados correctamente"</span>,
+  <span class="c-str">"data"</span>: [
+    {
+      <span class="c-str">"id"</span>: <span class="c-num">1</span>,
+      <span class="c-str">"sku"</span>: <span class="c-str">"PRD-001"</span>,
+      <span class="c-str">"nombre"</span>: <span class="c-str">"Arroz Extra"</span>,
+      <span class="c-str">"precioLista"</span>: <span class="c-num">3.50</span>,
+      <span class="c-str">"activo"</span>: <span class="c-bool">true</span>,
+      <span class="c-cm">// ... más campos</span>
+    }
+  ],
+  <span class="c-str">"total"</span>: <span class="c-num">1</span>
+}
+        </div>
+      </div>
+    </div>
+
+  </div><!-- fin step-flow -->
+
+  <!-- ========== SecurityContext visual ========== -->
+  <div class="context-visual">
+    <h3>&#128273; Contenido del SecurityContext durante el request</h3>
+    <div class="ctx-box">
+      <div class="ctx-title">Authentication</div>
+      <div class="ctx-item">authenticated: <span class="ctx-val">true</span></div>
+      <div class="ctx-item">type: <span class="ctx-val">UsernamePasswordAuthenticationToken</span></div>
+    </div>
+    <div class="ctx-box">
+      <div class="ctx-title">Principal (UsuarioPrincipal)</div>
+      <div class="ctx-item">id: <span class="ctx-val">1</span></div>
+      <div class="ctx-item">username: <span class="ctx-val">"admin"</span></div>
+      <div class="ctx-item">rolDescripcion: <span class="ctx-val">"ADMIN"</span></div>
+      <div class="ctx-item">activo: <span class="ctx-val">true</span></div>
+    </div>
+    <div class="ctx-box">
+      <div class="ctx-title">Authorities</div>
+      <div class="ctx-item">ROLE_<span class="ctx-val">ADMIN</span></div>
+    </div>
+    <div class="ctx-box">
+      <div class="ctx-title">Sesión</div>
+      <div class="ctx-item">JSESSIONID: <span class="ctx-val">ninguna (STATELESS)</span></div>
+      <div class="ctx-item">Duración: <span class="ctx-val">solo este request</span></div>
+    </div>
+  </div>
+
+  <!-- ========== CASOS DE ERROR ========== -->
+  <h2 class="section-title">&#10060; Casos de Error — ¿Qué pasa si falla la autenticación?</h2>
+
+  <div class="two-col">
+    <div class="error-flow">
+      <h3>Credenciales incorrectas (contraseña mal)</h3>
+      <div class="error-step"><div class="error-num">1</div><div>BCryptPasswordEncoder.matches("malpass", hash) → <strong>false</strong></div></div>
+      <div class="error-step"><div class="error-num">2</div><div>DaoAuthenticationProvider lanza <code>BadCredentialsException</code></div></div>
+      <div class="error-step"><div class="error-num">3</div><div>BasicAuthenticationEntryPoint responde con HTTP <strong>401 Unauthorized</strong></div></div>
+      <div class="error-step"><div class="error-num">4</div><div>Header: <code>WWW-Authenticate: Basic realm="Realm"</code></div></div>
+      <div class="error-step"><div class="error-num">5</div><div>El Controller <strong>NO</strong> se ejecuta</div></div>
+    </div>
+
+    <div class="error-flow">
+      <h3>Usuario no existe en la DB</h3>
+      <div class="error-step"><div class="error-num">1</div><div><code>usuarioRepository.findByUsuario("x")</code> → <code>Optional.empty()</code></div></div>
+      <div class="error-step"><div class="error-num">2</div><div>UserDetailsServiceImpl lanza <code>UsernameNotFoundException</code></div></div>
+      <div class="error-step"><div class="error-num">3</div><div>Spring Security convierte esto a <strong>401 Unauthorized</strong></div></div>
+      <div class="error-step"><div class="error-num">4</div><div>Por seguridad, el mensaje de error es genérico (no dice si el usuario existe o no)</div></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="error-flow">
+      <h3>Sin header Authorization</h3>
+      <div class="error-step"><div class="error-num">1</div><div>BasicAuthenticationFilter no encuentra el header</div></div>
+      <div class="error-step"><div class="error-num">2</div><div>No hay Authentication en SecurityContext</div></div>
+      <div class="error-step"><div class="error-num">3</div><div>AuthorizationFilter verifica: anyRequest().authenticated() → falla</div></div>
+      <div class="error-step"><div class="error-num">4</div><div>Respuesta: HTTP <strong>401 Unauthorized</strong></div></div>
+    </div>
+
+    <div class="error-flow">
+      <h3>Usuario sin rol ADMIN en endpoint restringido</h3>
+      <div class="error-step"><div class="error-num">1</div><div>Autenticación OK (contraseña correcta)</div></div>
+      <div class="error-step"><div class="error-num">2</div><div>UsuarioPrincipal tiene ROLE_ALMACENERO</div></div>
+      <div class="error-step"><div class="error-num">3</div><div><code>@PreAuthorize("hasRole('ADMIN')")</code> falla</div></div>
+      <div class="error-step"><div class="error-num">4</div><div>Respuesta: HTTP <strong>403 Forbidden</strong></div></div>
+    </div>
+  </div>
+
+  <!-- ========== PASSWORD MIGRATION ========== -->
+  <h2 class="section-title">&#128260; PasswordMigrationRunner — Migración automática de contraseñas</h2>
+
+  <div class="callout tip">
+    <div class="callout-title">¿Para qué sirve?</div>
+    <p>Cuando se instaló Spring Security, la base de datos tenía contraseñas en <strong>texto plano</strong> (ej: <code>"admin"</code>). Spring Security no puede comparar texto plano con BCrypt. El <code>PasswordMigrationRunner</code> detecta las contraseñas sin hash al arrancar la aplicación y las migra automáticamente a BCrypt. Es idempotente: la segunda vez que corre, las contraseñas ya son BCrypt y no hace nada.</p>
+  </div>
+
+  <div class="step-code" style="margin: 1rem 0;">
+<span class="c-cm">// PasswordMigrationRunner.java — se ejecuta una vez al arrancar Spring Boot</span>
+<span class="c-ann">@Component</span>
+<span class="c-kw">public class</span> <span class="c-cls">PasswordMigrationRunner</span> <span class="c-kw">implements</span> <span class="c-cls">ApplicationRunner</span> {
+
+    <span class="c-ann">@Override</span>
+    <span class="c-ann">@Transactional</span>
+    <span class="c-kw">public void</span> <span class="c-fn">run</span>(<span class="c-cls">ApplicationArguments</span> args) {
+        <span class="c-kw">int</span> migrados = <span class="c-num">0</span>;
+
+        <span class="c-kw">for</span> (<span class="c-cls">Usuario</span> usuario : usuarioRepository.<span class="c-fn">findAll</span>()) {
+
+            <span class="c-cm">// ¿Ya es BCrypt? Los hashes BCrypt siempre empiezan con $2 y tienen 60 chars</span>
+            <span class="c-kw">boolean</span> yaEsBcrypt = usuario.<span class="c-fn">getPassword</span>().<span class="c-fn">startsWith</span>(<span class="c-str">"$2"</span>)
+                              &amp;&amp; usuario.<span class="c-fn">getPassword</span>().<span class="c-fn">length</span>() == <span class="c-num">60</span>;
+
+            <span class="c-kw">if</span> (!yaEsBcrypt) {
+                <span class="c-cm">// Reemplaza el texto plano con su hash BCrypt</span>
+                usuario.<span class="c-fn">setPassword</span>(passwordEncoder.<span class="c-fn">encode</span>(usuario.<span class="c-fn">getPassword</span>()));
+                usuarioRepository.<span class="c-fn">save</span>(usuario);
+                migrados++;
+            }
+        }
+        <span class="c-cm">// Ejemplos:</span>
+        <span class="c-cm">// "admin"  → "$2a$10$hKZdsMlFkdjhQ2kJMO1xyz..." (60 chars)</span>
+        <span class="c-cm">// "1234"   → "$2a$10$9xPaT0dDfGhIjKlMnOpQrs..." (60 chars)</span>
+    }
+}
+  </div>
+
+  <!-- ========== RESUMEN VISUAL ========== -->
+  <h2 class="section-title">&#127775; Resumen: Clases involucradas en la autenticación</h2>
+
+  <div class="step-code">
+<span class="c-cm">HTTP Request  →  Spring Security Filters  →  Controller  →  Service  →  DB</span>
+
+<span class="c-cm">Clases propias del proyecto (config/):</span>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ <span class="c-ann">SecurityConfig</span>           → Define los 2 filter chains con @Order(1) y @Order(2) │
+│ <span class="c-ann">UserDetailsServiceImpl</span>   → Carga usuario de DB por nombre de usuario          │
+│ <span class="c-ann">UsuarioPrincipal</span>         → Envuelve Usuario como UserDetails (inmutable)        │
+│ <span class="c-ann">AuthSuccessHandler</span>       → Post-login para MVC: guarda nombre/rol en sesión    │
+│ <span class="c-ann">PasswordMigrationRunner</span>  → Migra contraseñas planas a BCrypt al arrancar       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+<span class="c-cm">Clases de Spring Security (automáticas, no necesitas escribirlas):</span>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FilterChainProxy           → Enruta al chain correcto por ruta               │
+│ BasicAuthenticationFilter  → Extrae header Authorization: Basic y decodifica │
+│ DaoAuthenticationProvider  → Llama loadUserByUsername + compara contraseña   │
+│ BCryptPasswordEncoder      → Verifica hash (definido como @Bean nuestro)     │
+│ SecurityContextHolder      → Almacena Authentication durante el request      │
+│ AuthorizationFilter        → Verifica roles/permisos antes del controller    │
+└─────────────────────────────────────────────────────────────────────────────┘
+  </div>
+
+</div>
+
+<footer>
+  <a href="index.html" style="color:var(--accent); text-decoration:none;">&#8592; Índice</a>
+  &nbsp;·&nbsp;
+  <a href="flujo-crud-producto.html" style="color:var(--accent); text-decoration:none;">Flujo CRUD Producto &#8594;</a>
+  <br><br>
+  Sistema de Gestión de Inventario &nbsp;·&nbsp; Distribuidora Andina SAC
+</footer>
+
+</body>
+</html>

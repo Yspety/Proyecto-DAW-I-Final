@@ -1,0 +1,148 @@
+<app-navbar />
+
+<main class="erp-page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div>
+      <h1 class="erp-page-title">Transacciones</h1>
+      <p class="erp-page-subtitle">Registro de entradas, salidas y ajustes de stock</p>
+    </div>
+    <button (click)="abrirNuevo()" class="erp-btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Movimiento
+    </button>
+  </div>
+
+  @if (alerta()) {
+    <div [class]="alerta()!.tipo === 'ok'
+      ? 'flex items-center justify-between gap-2 bg-[#EAF6EE] border border-[#82C99A] text-[#1A5C2E] rounded-lg px-4 py-3 mb-4 text-[13px]'
+      : 'flex items-center justify-between gap-2 bg-[#FCEBEB] border border-[#F09595] text-[#A32D2D] rounded-lg px-4 py-3 mb-4 text-[13px]'">
+      <span>{{ alerta()!.msg }}</span>
+      <button (click)="alerta.set(null)" class="text-current opacity-50 hover:opacity-100 border-none bg-transparent cursor-pointer text-xl leading-none shrink-0">&times;</button>
+    </div>
+  }
+
+  <div class="erp-card">
+    <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="relative max-w-[300px] w-full">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#B4B2A9]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input [(ngModel)]="searchTerm" (input)="filtrar()" class="erp-input pl-9 text-[13px]" placeholder="Buscar producto o referencia...">
+        </div>
+        <select [(ngModel)]="filtroTipo" (change)="filtrar()" class="erp-select w-auto min-w-[140px]">
+          <option value="">Todos los tipos</option>
+          @for (t of tiposMovimiento; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+      <span class="text-[13px] text-[#888780] whitespace-nowrap">Total: <strong class="text-[#1B2A4A]">{{ filtrados.length }}</strong></span>
+    </div>
+
+    <div class="overflow-x-auto rounded-lg border border-[#D3D1C7]">
+      <table class="w-full text-[13px] border-collapse">
+        <thead class="bg-[#F5F7FA]">
+          <tr>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Fecha</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Tipo</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Producto</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Almacén</th>
+            <th class="text-right px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Cantidad</th>
+            <th class="text-right px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Costo Total</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Referencia</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr><td colspan="8" class="text-center text-[#B4B2A9] p-8 text-[13px]">Cargando...</td></tr>
+          }
+          @for (m of filtrados; track m.id) {
+            <tr class="hover:bg-[#F5F7FA] border-b border-[#EEF2F8] last:border-0">
+              <td class="px-3.5 py-2.5 text-[#888780] whitespace-nowrap">{{ m.fechaMovimiento | slice:0:10 }}</td>
+              <td class="px-3.5 py-2.5"><span [class]="badgeTipo(m.tipoMovimiento)">{{ m.tipoMovimiento }}</span></td>
+              <td class="px-3.5 py-2.5">
+                <div class="font-medium text-[#2C2C2A]">{{ m.productoNombre }}</div>
+                <div class="text-[11px] font-mono text-[#5B9BD5]">{{ m.productoSku }}</div>
+              </td>
+              <td class="px-3.5 py-2.5 text-[#888780]">{{ m.almacenNombre }}</td>
+              <td class="px-3.5 py-2.5 text-right font-semibold text-[#2C2C2A]">{{ m.cantidad }}</td>
+              <td class="px-3.5 py-2.5 text-right text-[#888780]">
+                {{ m.costoTotal != null ? ('S/ ' + m.costoTotal.toFixed(2)) : '—' }}
+              </td>
+              <td class="px-3.5 py-2.5 text-[#888780]">{{ m.referencia || '—' }}</td>
+              <td class="px-3.5 py-2.5 text-[#888780] text-[12px]">{{ m.usuario }}</td>
+            </tr>
+          }
+          @empty {
+            @if (!cargando()) {
+              <tr><td colspan="8" class="text-center text-[#B4B2A9] p-8 text-[13px]">No hay movimientos registrados</td></tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<app-footer />
+
+@if (modalAbierto()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="cerrarModal()">
+    <div class="bg-white rounded-[14px] border border-[#D3D1C7] w-full max-w-lg overflow-hidden" (click)="$event.stopPropagation()">
+      <div class="bg-[#1B2A4A] px-6 py-5 flex items-center justify-between">
+        <h5 class="text-[#E8EEF8] font-semibold text-base m-0">Registrar Movimiento</h5>
+        <button (click)="cerrarModal()" class="text-[#8FA8D0] hover:text-white text-2xl leading-none border-none bg-transparent cursor-pointer">&times;</button>
+      </div>
+      <div class="p-6 flex flex-col gap-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="erp-label">Almacén <span class="text-red-500">*</span></label>
+            <select [formControl]="$any(form.get('almacenId'))" class="erp-select">
+              <option [value]="null" disabled>Seleccionar...</option>
+              @for (a of almacenes; track a.id) {
+                <option [value]="a.id">{{ a.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="erp-label">Tipo <span class="text-red-500">*</span></label>
+            <select [formControl]="$any(form.get('tipoMovimiento'))" class="erp-select">
+              @for (t of tiposMovimiento; track t) {
+                <option [value]="t">{{ t }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="erp-label">Producto <span class="text-red-500">*</span></label>
+          <select [formControl]="$any(form.get('productoId'))" class="erp-select">
+            <option [value]="null" disabled>Seleccionar...</option>
+            @for (p of productos; track p.id) {
+              <option [value]="p.id">{{ p.nombre }} ({{ p.sku }})</option>
+            }
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="erp-label">Cantidad <span class="text-red-500">*</span></label>
+            <input type="number"  [formControl]="$any(form.get('cantidad'))" class="erp-input" placeholder="0">
+          </div>
+          <div>
+            <label class="erp-label">Costo Unitario</label>
+            <input type="number" step="0.01" [formControl]="$any(form.get('costoUnitario'))" class="erp-input" placeholder="Opcional">
+          </div>
+        </div>
+        <div>
+          <label class="erp-label">Referencia</label>
+          <input type="text" [formControl]="$any(form.get('referencia'))" class="erp-input" placeholder="Ej. OC-001, Factura #123">
+        </div>
+      </div>
+      <div class="bg-[#F5F7FA] border-t border-[#D3D1C7] px-6 py-4 flex justify-end gap-2.5">
+        <button (click)="cerrarModal()" class="erp-btn-secondary">Cancelar</button>
+        <button (click)="guardar()" [disabled]="form.invalid || guardando()" class="erp-btn-primary disabled:opacity-60">
+          {{ guardando() ? 'Registrando...' : 'Registrar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

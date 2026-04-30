@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flujo del Sistema – Distribuidora Andina SAC</title>
+  <style>
+    :root {
+      --navy: #0F172A;
+      --blue: #1B2A4A;
+      --accent: #3B82F6;
+      --light-blue: #5B9BD5;
+      --bg: #F0F4FC;
+      --card: #FFFFFF;
+      --text: #1E293B;
+      --muted: #64748B;
+      --success: #16A34A;
+      --danger: #DC2626;
+      --warning: #D97706;
+      --border: #CBD5E1;
+      --step-bg: #EFF6FF;
+      --code-bg: #1E293B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1e3a6e 100%);
+      color: #fff;
+      padding: 48px 40px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(59,130,246,0.12);
+    }
+    header .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    header .logo {
+      width: 48px; height: 48px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; letter-spacing: 1px;
+    }
+    header h1 { font-size: 28px; font-weight: 700; }
+    header p { color: #93C5FD; font-size: 15px; margin-top: 6px; max-width: 680px; }
+    .badge-header {
+      display: inline-block;
+      background: rgba(59,130,246,0.25);
+      color: #93C5FD;
+      border: 1px solid rgba(59,130,246,0.4);
+      border-radius: 20px;
+      padding: 2px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    /* ── NAV PILLS ── */
+    nav.toc {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 40px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    }
+    nav.toc a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--accent);
+      transition: all 0.18s;
+    }
+    nav.toc a:hover { background: var(--accent); color: #fff; }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    section { margin-bottom: 56px; }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--blue);
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 .icon {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #fff;
+      flex-shrink: 0;
+    }
+    h3 { font-size: 17px; font-weight: 600; color: var(--blue); margin: 24px 0 10px; }
+    p { margin-bottom: 14px; color: var(--text); font-size: 15px; }
+
+    /* ── STEP CARDS ── */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 44px;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+      z-index: 1;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.4);
+    }
+    .step-body {
+      background: var(--step-bg);
+      border: 1px solid #BFDBFE;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+    .step-body strong { display: block; font-size: 15px; color: var(--blue); margin-bottom: 6px; }
+    .step-body p { font-size: 14px; margin-bottom: 0; }
+
+    /* ── CODE BLOCKS ── */
+    pre {
+      background: var(--code-bg);
+      color: #E2E8F0;
+      border-radius: 10px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      margin: 14px 0;
+    }
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+    .hljs-key { color: #93C5FD; }
+    .hljs-str { color: #86EFAC; }
+    .hljs-comment { color: #64748B; font-style: italic; }
+    .hljs-fn { color: #FCD34D; }
+    .hljs-type { color: #F9A8D4; }
+    .hljs-num { color: #FCA5A5; }
+
+    /* ── INLINE CODE ── */
+    code.inline {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 13px;
+    }
+
+    /* ── INFO BOXES ── */
+    .box {
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      display: flex;
+      gap: 14px;
+    }
+    .box-icon { font-size: 22px; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+    .box-body { font-size: 14px; flex: 1; }
+    .box-body strong { display: block; font-weight: 600; margin-bottom: 4px; }
+    .box.info { background: #EFF6FF; border: 1px solid #BFDBFE; }
+    .box.info .box-icon { color: #3B82F6; }
+    .box.success { background: #F0FDF4; border: 1px solid #BBF7D0; }
+    .box.success .box-icon { color: var(--success); }
+    .box.warning { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .box.warning .box-icon { color: var(--warning); }
+    .box.danger { background: #FEF2F2; border: 1px solid #FECACA; }
+    .box.danger .box-icon { color: var(--danger); }
+
+    /* ── TABLES ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 16px 0;
+    }
+    thead { background: var(--navy); color: #fff; }
+    thead th { padding: 11px 16px; text-align: left; font-weight: 600; }
+    tbody tr:nth-child(even) { background: #F8FAFC; }
+    tbody tr:hover { background: #EFF6FF; }
+    td { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-blue { background: #DBEAFE; color: #1D4ED8; }
+    .badge-green { background: #DCFCE7; color: #166534; }
+    .badge-red { background: #FEE2E2; color: #991B1B; }
+    .badge-yellow { background: #FEF9C3; color: #854D0E; }
+
+    /* ── GRID ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    /* ── FLOW MINI ── */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+    .flow-pill {
+      background: var(--navy);
+      color: #93C5FD;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .flow-arrow {
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* ── SCREENSHOT MOCK ── */
+    .mock-browser {
+      background: #1E293B;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .mock-bar {
+      background: #334155;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mock-url {
+      margin-left: 12px;
+      background: #1E293B;
+      border-radius: 4px;
+      padding: 3px 12px;
+      font-size: 12px;
+      color: #94A3B8;
+      font-family: monospace;
+    }
+    .mock-body { padding: 0; }
+
+    /* ── LOGIN MOCKUP ── */
+    .login-mock {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 280px;
+    }
+    .login-left {
+      background: linear-gradient(135deg, #0F172A 0%, #1e3a6e 100%);
+      padding: 32px;
+      display: flex; flex-direction: column; justify-content: center;
+      color: #fff;
+    }
+    .login-left .da { font-size: 32px; font-weight: 800; color: #3B82F6; margin-bottom: 8px; }
+    .login-left h3 { font-size: 18px; color: #E2E8F0; margin-bottom: 6px; }
+    .login-left p { font-size: 13px; color: #64748B; }
+    .login-right {
+      background: #F8FAFC;
+      padding: 32px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .mock-input {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #334155;
+      margin-bottom: 10px;
+    }
+    .mock-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* ── TABLA MOCK ── */
+    .table-mock {
+      padding: 20px;
+    }
+    .table-mock-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+    }
+    .table-mock-title { color: #E2E8F0; font-weight: 700; font-size: 16px; }
+    .mock-add-btn {
+      background: var(--accent); color: #fff;
+      padding: 6px 14px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; border: none;
+    }
+    .mock-search {
+      background: #334155; border: 1px solid #475569;
+      border-radius: 6px; padding: 6px 12px;
+      color: #94A3B8; font-size: 12px; width: 180px;
+    }
+    .table-mock table { width: 100%; border-collapse: collapse; }
+    .table-mock thead th { color: #94A3B8; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 10px; border-bottom: 1px solid #334155; text-align: left; background: transparent; }
+    .table-mock tbody td { color: #CBD5E1; font-size: 12px; padding: 8px 10px; border-bottom: 1px solid #1E293B; }
+    .table-mock tbody tr:hover td { background: #1E293B; }
+    .action-edit { color: #60A5FA; font-size: 11px; padding: 2px 8px; border: 1px solid #3B82F6; border-radius: 4px; margin-right: 4px; }
+    .action-del { color: #F87171; font-size: 11px; padding: 2px 8px; border: 1px solid #EF4444; border-radius: 4px; }
+    .sk { color: #94A3B8; font-family: monospace; font-size: 11px; }
+
+    /* ── MODAL MOCK ── */
+    .modal-overlay { background: rgba(0,0,0,0.6); padding: 20px; display: flex; align-items: center; justify-content: center; }
+    .modal-box { background: #1E293B; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; border: 1px solid #334155; }
+    .modal-title { color: #E2E8F0; font-weight: 700; font-size: 16px; margin-bottom: 16px; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .mock-field label { display: block; font-size: 10px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .mock-field .fi { background: #0F172A; border: 1px solid #475569; border-radius: 5px; padding: 6px 10px; color: #CBD5E1; font-size: 12px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    .btn-cancel { background: #334155; color: #94A3B8; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; }
+    .btn-save { background: #3B82F6; color: #fff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      background: var(--navy);
+      color: #475569;
+      font-size: 13px;
+    }
+    footer strong { color: #64748B; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">DA</div>
+    <div>
+      <h1>Sistema de Gestión de Inventario</h1>
+      <div>Distribuidora Andina SAC</div>
+    </div>
+  </div>
+  <p>Documentación pedagógica del flujo completo: desde el inicio de sesión hasta la gestión CRUD de productos, con explicación técnica de cada capa del sistema.</p>
+  <div class="badge-header">Angular 18 · Spring Boot 3.5 · HTTP Basic Auth · Tailwind CSS</div>
+</header>
+
+<nav class="toc">
+  <a href="#s1">01 · Visión General</a>
+  <a href="#s2">02 · Inicio de Sesión</a>
+  <a href="#s3">03 · Post-Login</a>
+  <a href="#s4">04 · CRUD Producto</a>
+  <a href="#s5">05 · Alertas</a>
+  <a href="#s6">06 · Cierre de Sesión</a>
+  <a href="#s7">07 · Resumen Técnico</a>
+</nav>
+
+<main>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="s1">
+    <h2><span class="icon">🗺</span> 01 · Visión General del Sistema</h2>
+
+    <p>El sistema está compuesto por dos aplicaciones independientes que se comunican entre sí. El <strong>frontend Angular</strong> es la interfaz visual que usa el usuario; el <strong>backend Spring Boot</strong> almacena y protege los datos. Ambos se ejecutan en paralelo en la misma máquina durante desarrollo.</p>
+
+    <div class="grid-2" style="margin: 24px 0;">
+      <div class="card">
+        <h3 style="margin-top:0">🖥 Frontend Angular 18</h3>
+        <p style="font-size:14px">Puerto <code class="inline">4200</code></p>
+        <p style="font-size:14px">Componentes standalone, Signals, Tailwind CSS. El navegador descarga este código y lo ejecuta. Nunca toca la base de datos directamente.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">⚙️ Backend Spring Boot 3.5</h3>
+        <p style="font-size:14px">Puerto <code class="inline">8080</code></p>
+        <p style="font-size:14px">API REST con Spring Security. Expone endpoints <code class="inline">/api/**</code> protegidos por HTTP Basic Auth. Lee y escribe en MySQL.</p>
+      </div>
+    </div>
+
+    <div class="box info">
+      <div class="box-icon">💡</div>
+      <div class="box-body">
+        <strong>¿Cómo se comunican?</strong>
+        Durante el desarrollo, el servidor Angular tiene un <em>proxy</em> (<code class="inline">proxy.conf.js</code>) que redirige todas las peticiones que empiecen con <code class="inline">/api/</code> al backend en <code class="inline">http://localhost:8080</code>. Así el navegador siempre habla con el puerto 4200 y Angular maneja la redirección.
+      </div>
+    </div>
+
+    <div class="flow-row">
+      <div class="flow-pill">Navegador :4200</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-pill">Proxy /api/*</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-pill">Spring Boot :8080</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-pill">MySQL DB</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="s2">
+    <h2><span class="icon">🔐</span> 02 · Inicio de Sesión (Login)</h2>
+
+    <p>Cuando el usuario accede a la aplicación por primera vez, el <strong>guardián de ruta</strong> (<code class="inline">authGuard</code>) detecta que no hay sesión activa y redirige automáticamente a <code class="inline">/login</code>.</p>
+
+    <!-- LOGIN MOCKUP -->
+    <div class="mock-browser" style="margin: 20px 0;">
+      <div class="mock-bar">
+        <div class="mock-dot" style="background:#EF4444"></div>
+        <div class="mock-dot" style="background:#F59E0B"></div>
+        <div class="mock-dot" style="background:#10B981"></div>
+        <div class="mock-url">localhost:4200/login</div>
+      </div>
+      <div class="mock-body">
+        <div class="login-mock">
+          <div class="login-left">
+            <div class="da">DA</div>
+            <h3>Distribuidora Andina SAC</h3>
+            <p style="color:#475569;font-size:12px;margin-top:4px">Sistema ERP de Inventario v1.0</p>
+            <div style="margin-top:20px">
+              <div style="color:#93C5FD;font-size:12px;margin-bottom:8px">✓ Control de almacenes</div>
+              <div style="color:#93C5FD;font-size:12px;margin-bottom:8px">✓ Gestión de productos</div>
+              <div style="color:#93C5FD;font-size:12px">✓ Registro de movimientos</div>
+            </div>
+          </div>
+          <div class="login-right">
+            <div style="font-size:18px;font-weight:700;color:#1B2A4A;margin-bottom:4px">Iniciar sesión</div>
+            <div style="font-size:13px;color:#64748B;margin-bottom:18px">Ingresa tus credenciales para continuar</div>
+            <input class="mock-input" type="text" value="admin" readonly />
+            <input class="mock-input" type="password" value="●●●●●●●●" readonly />
+            <button class="mock-btn">Iniciar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>¿Qué ocurre técnicamente al hacer clic en "Iniciar sesión"?</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Validación del formulario reactivo</strong>
+          <p>El <code class="inline">LoginComponent</code> usa <code class="inline">ReactiveFormsModule</code> de Angular. Los campos <code class="inline">usuario</code> y <code class="inline">contraseña</code> tienen validadores <code class="inline">Validators.required</code>. Si alguno está vacío, el botón no ejecuta la acción y se muestran los errores.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Codificación Base64 de las credenciales</strong>
+          <p>El método <code class="inline">AuthService.login()</code> convierte las credenciales a formato HTTP Basic Auth: toma la cadena <code class="inline">"usuario:password"</code> y la transforma con <code class="inline">btoa()</code> a Base64. Ej: <code class="inline">"admin:1234"</code> → <code class="inline">"YWRtaW46MTIzNA=="</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Almacenamiento del token en localStorage</strong>
+          <p>El token Base64 se guarda en <code class="inline">localStorage</code> bajo la clave <code class="inline">erp_token</code>. Esto es temporal y persiste aunque el usuario recargue el navegador, hasta que haga logout.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Verificación contra el backend: GET /api/usuarios/me</strong>
+          <p>El servicio realiza una petición HTTP con el header <code class="inline">Authorization: Basic YWRtaW46MTIzNA==</code> al endpoint <code class="inline">GET /api/usuarios/me</code>. Si las credenciales son correctas, Spring Boot responde con los datos del usuario (nombre, apellido, rol). Si son incorrectas, responde con <strong>HTTP 401 Unauthorized</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>Almacenamiento del perfil del usuario</strong>
+          <p>Si el backend responde con éxito, el <code class="inline">AuthService</code> guarda el nombre completo y el rol en <code class="inline">localStorage('erp_user')</code> como JSON. Este dato se usa en el <strong>Navbar</strong> para mostrar el nombre del usuario y en el guard para decidir si mostrar el menú de administración.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <strong>Navegación a /home</strong>
+          <p>Una vez almacenados token y perfil, el router navega automáticamente a <code class="inline">/home</code>. Si las credenciales eran incorrectas, se limpia el localStorage y se muestra el mensaje <em>"Credenciales inválidas"</em> en el formulario.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Código clave del login</h3>
+    <pre><code><span class="hljs-comment">// auth.service.ts</span>
+<span class="hljs-key">login</span>(<span class="hljs-type">usuario</span>: string, <span class="hljs-type">password</span>: string): Observable&lt;void&gt; {
+  <span class="hljs-key">const</span> token = btoa(`${usuario}:${password}`); <span class="hljs-comment">// Base64</span>
+  localStorage.setItem(<span class="hljs-str">'erp_token'</span>, token);
+
+  <span class="hljs-key">return</span> this.http.get&lt;ApiEnvelope&lt;Usuario&gt;&gt;(<span class="hljs-str">'/api/usuarios/me'</span>).pipe(
+    map(resp =&gt; {
+      <span class="hljs-key">const</span> user = resp.data;
+      localStorage.setItem(<span class="hljs-str">'erp_user'</span>, JSON.stringify({
+        nombreCompleto: `${user.nombre} ${user.apellido}`,
+        rol: user.rolDescripcion
+      }));
+    }),
+    catchError(() =&gt; {
+      localStorage.removeItem(<span class="hljs-str">'erp_token'</span>);
+      <span class="hljs-key">return</span> throwError(() =&gt; <span class="hljs-key">new</span> Error(<span class="hljs-str">'Credenciales inválidas'</span>));
+    })
+  );
+}</code></pre>
+
+    <div class="box warning">
+      <div class="box-icon">⚠️</div>
+      <div class="box-body">
+        <strong>Sobre la seguridad de HTTP Basic Auth</strong>
+        El token Base64 en localStorage NO es cifrado; es solo una codificación. En producción real, esto se combina con HTTPS para que el header viaje cifrado por TLS. Para esta aplicación académica es suficiente, pero en entornos productivos se recomienda JWT con HTTPS.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="s3">
+    <h2><span class="icon">🏠</span> 03 · Navegación Post-Login</h2>
+
+    <p>Tras el login exitoso, el usuario llega al <strong>Dashboard (Home)</strong>. Cada vez que navega a una ruta protegida, el <code class="inline">authGuard</code> verifica que <code class="inline">localStorage('erp_token')</code> exista. Si alguien intenta acceder a <code class="inline">/productos</code> directamente sin token, es redirigido a <code class="inline">/login</code>.</p>
+
+    <div class="box info">
+      <div class="box-icon">🛡</div>
+      <div class="box-body">
+        <strong>authGuard — El portero de las rutas</strong>
+        Es una función (<code class="inline">CanActivateFn</code>) registrada en cada ruta protegida de <code class="inline">app.routes.ts</code>. Revisa si hay token en localStorage. Si no hay, redirige a <code class="inline">/login</code>. No valida si el token es correcto en el backend — esa validación ocurre en cada petición HTTP mediante el interceptor.
+      </div>
+    </div>
+
+    <h3>Rutas del sistema</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Ruta</th>
+          <th>Componente</th>
+          <th>Protegida</th>
+          <th>Solo Admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code class="inline">/login</code></td>
+          <td>LoginComponent</td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/home</code></td>
+          <td>HomeComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/almacenes</code></td>
+          <td>AlmacenesComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/categorias</code></td>
+          <td>CategoriasComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/productos</code></td>
+          <td>ProductosComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/unidades</code></td>
+          <td>UnidadesComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/inventario</code></td>
+          <td>InventarioComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/movimientos</code></td>
+          <td>MovimientosComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-red">No</span></td>
+        </tr>
+        <tr>
+          <td><code class="inline">/usuarios</code></td>
+          <td>UsuariosComponent</td>
+          <td><span class="badge badge-green">Sí</span></td>
+          <td><span class="badge badge-green">Sí (en UI)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>El interceptor: el "cartero" automático</h3>
+    <p>El <code class="inline">BasicAuthInterceptor</code> está registrado globalmente en <code class="inline">app.config.ts</code>. Intercepta <strong>todas</strong> las peticiones HTTP de la aplicación antes de que salgan al servidor. Si la URL contiene <code class="inline">/api/</code>, añade automáticamente el header de autenticación. El desarrollador no tiene que escribir el header en cada servicio.</p>
+
+    <pre><code><span class="hljs-comment">// basic-auth.interceptor.ts</span>
+<span class="hljs-key">export const</span> basicAuthInterceptor: <span class="hljs-type">HttpInterceptorFn</span> = (req, next) =&gt; {
+  <span class="hljs-key">const</span> token = localStorage.getItem(<span class="hljs-str">'erp_token'</span>);
+
+  <span class="hljs-key">if</span> (token &amp;&amp; req.url.includes(<span class="hljs-str">'/api/'</span>)) {
+    <span class="hljs-key">const</span> authReq = req.clone({
+      setHeaders: { <span class="hljs-str">Authorization</span>: `Basic ${token}` }
+    });
+    <span class="hljs-key">return</span> next(authReq);  <span class="hljs-comment">// envía la petición modificada</span>
+  }
+  <span class="hljs-key">return</span> next(req);  <span class="hljs-comment">// sin token, la envía igual (solo /login no tiene token)</span>
+};</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="s4">
+    <h2><span class="icon">📦</span> 04 · CRUD Completo: Ejemplo con Productos</h2>
+
+    <p>La sección de <strong>Productos</strong> es el ejemplo perfecto del patrón CRUD implementado en todo el sistema. Veamos el flujo completo paso a paso con un producto real.</p>
+
+    <div class="box success">
+      <div class="box-icon">🎯</div>
+      <div class="box-body">
+        <strong>Producto de ejemplo: Aceite de cocina Sol 1L</strong>
+        SKU: <code class="inline">PRD-001</code> · Categoría: Alimentos · Unidad: Litros · Precio: S/ 8.50
+      </div>
+    </div>
+
+    <!-- LECTURA / LISTAR -->
+    <h3>📋 R — Read: Listar productos al entrar a la página</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Angular ejecuta ngOnInit del componente</strong>
+          <p>Al navegar a <code class="inline">/productos</code>, Angular instancia <code class="inline">ProductosComponent</code>. En <code class="inline">ngOnInit()</code> se llama <code class="inline">cargar()</code>, que activa la señal <code class="inline">cargando = signal(true)</code> para mostrar un spinner al usuario.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>forkJoin lanza 3 peticiones en paralelo</strong>
+          <p>El componente necesita datos de 3 endpoints simultáneamente. Usa <code class="inline">forkJoin()</code> de RxJS para ejecutar las 3 llamadas al mismo tiempo y esperar a que todas terminen. Esto es más eficiente que hacerlas en secuencia.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>El interceptor añade el header de autenticación</strong>
+          <p>Antes de que las peticiones salgan, el <code class="inline">BasicAuthInterceptor</code> las intercepta y añade <code class="inline">Authorization: Basic YWRtaW46MTIzNA==</code>. El backend valida este header con Spring Security en cada petición.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Los servicios reciben y "desenvuelven" la respuesta</strong>
+          <p>El backend responde con el envelope <code class="inline">{ success, message, data, total }</code>. Cada servicio usa <code class="inline">.pipe(map(r => r.data))</code> para extraer solo el array de datos antes de devolverlo al componente.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>El componente renderiza la tabla</strong>
+          <p>Los datos se guardan en variables locales del componente. Angular actualiza el DOM con la directiva <code class="inline">*ngFor</code> para renderizar cada fila. Se desactiva la señal <code class="inline">cargando = signal(false)</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mock-browser" style="margin: 20px 0;">
+      <div class="mock-bar">
+        <div class="mock-dot" style="background:#EF4444"></div>
+        <div class="mock-dot" style="background:#F59E0B"></div>
+        <div class="mock-dot" style="background:#10B981"></div>
+        <div class="mock-url">localhost:4200/productos</div>
+      </div>
+      <div class="table-mock">
+        <div class="table-mock-header">
+          <div class="table-mock-title">Productos</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <input class="mock-search" value="Buscar producto..." readonly />
+            <button class="mock-add-btn">+ Nuevo Producto</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th><th>Nombre</th><th>Categoría</th><th>Unidad</th><th>Precio</th><th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sk">PRD-001</td>
+              <td>Aceite Sol 1L</td>
+              <td>Alimentos</td>
+              <td>Litros</td>
+              <td>S/ 8.50</td>
+              <td><span style="background:#16A34A22;color:#86EFAC;padding:2px 8px;border-radius:20px;font-size:11px">Activo</span></td>
+              <td><span class="action-edit">Editar</span><span class="action-del">Eliminar</span></td>
+            </tr>
+            <tr>
+              <td class="sk">PRD-002</td>
+              <td>Azúcar Rubia 1kg</td>
+              <td>Alimentos</td>
+              <td>Kilogramos</td>
+              <td>S/ 4.20</td>
+              <td><span style="background:#16A34A22;color:#86EFAC;padding:2px 8px;border-radius:20px;font-size:11px">Activo</span></td>
+              <td><span class="action-edit">Editar</span><span class="action-del">Eliminar</span></td>
+            </tr>
+            <tr>
+              <td class="sk">PRD-003</td>
+              <td>Arroz Extra 5kg</td>
+              <td>Alimentos</td>
+              <td>Kilogramos</td>
+              <td>S/ 22.00</td>
+              <td><span style="background:#DC262622;color:#FCA5A5;padding:2px 8px;border-radius:20px;font-size:11px">Inactivo</span></td>
+              <td><span class="action-edit">Editar</span><span class="action-del">Eliminar</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <pre><code><span class="hljs-comment">// productos.component.ts — carga inicial</span>
+<span class="hljs-key">ngOnInit</span>() {
+  this.cargar();
+}
+
+<span class="hljs-key">cargar</span>() {
+  this.cargando.set(<span class="hljs-key">true</span>);
+  forkJoin({
+    productos:  this.productoService.getAll(),   <span class="hljs-comment">// GET /api/productos</span>
+    categorias: this.categoriaService.getAll(),  <span class="hljs-comment">// GET /api/categorias</span>
+    unidades:   this.unidadService.getAll()      <span class="hljs-comment">// GET /api/unidades</span>
+  }).subscribe({
+    next: ({ productos, categorias, unidades }) =&gt; {
+      this.productos  = productos;
+      this.filtrados  = productos;  <span class="hljs-comment">// copia para filtrar localmente</span>
+      this.categorias = categorias;
+      this.unidades   = unidades;
+      this.cargando.set(<span class="hljs-key">false</span>);
+    }
+  });
+}</code></pre>
+
+    <!-- CREAR -->
+    <h3>➕ C — Create: Registrar un nuevo producto</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>El usuario hace clic en "+ Nuevo Producto"</strong>
+          <p>Se activan las señales <code class="inline">modalAbierto = signal(true)</code> y <code class="inline">modoEdicion = signal(false)</code>. El formulario modal aparece en pantalla vacío.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>El usuario completa el formulario</strong>
+          <p>El formulario usa <code class="inline">FormBuilder</code> con validaciones. Para nuestro ejemplo: SKU=PRD-004, Nombre=Leche Gloria 1L, Categoría=Lácteos, Unidad=Litros, Precio=3.80.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Guardar activa la señal de "cargando botón"</strong>
+          <p>Al hacer clic en "Guardar", se activa <code class="inline">guardando = signal(true)</code> para deshabilitar el botón y evitar doble envío. El formulario es inválido mientras <code class="inline">guardando</code> es <code class="inline">true</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>POST /api/productos con el body JSON</strong>
+          <p>El servicio <code class="inline">ProductoService.create()</code> envía los datos. El interceptor añade el header de auth. Spring Boot valida, guarda en MySQL y devuelve el objeto creado con su ID asignado.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>Se cierra el modal y se recarga la lista</strong>
+          <p>En el callback <code class="inline">next()</code> de la suscripción: se llama <code class="inline">cargar()</code> para obtener la lista actualizada, se cierra el modal con <code class="inline">modalAbierto.set(false)</code> y se muestra la alerta de éxito.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mock-browser" style="margin: 20px 0;">
+      <div class="mock-bar">
+        <div class="mock-dot" style="background:#EF4444"></div>
+        <div class="mock-dot" style="background:#F59E0B"></div>
+        <div class="mock-dot" style="background:#10B981"></div>
+        <div class="mock-url">localhost:4200/productos</div>
+      </div>
+      <div class="modal-overlay">
+        <div class="modal-box">
+          <div class="modal-title">Nuevo Producto</div>
+          <div class="modal-grid">
+            <div class="mock-field">
+              <label>SKU *</label>
+              <div class="fi">PRD-004</div>
+            </div>
+            <div class="mock-field">
+              <label>Código de Barras</label>
+              <div class="fi">7750695101</div>
+            </div>
+            <div class="mock-field" style="grid-column: 1/-1">
+              <label>Nombre del Producto *</label>
+              <div class="fi">Leche Gloria 1L</div>
+            </div>
+            <div class="mock-field">
+              <label>Categoría *</label>
+              <div class="fi" style="color:#60A5FA">Lácteos ▾</div>
+            </div>
+            <div class="mock-field">
+              <label>Unidad *</label>
+              <div class="fi" style="color:#60A5FA">Litros ▾</div>
+            </div>
+            <div class="mock-field">
+              <label>Precio de Lista *</label>
+              <div class="fi">3.80</div>
+            </div>
+            <div class="mock-field">
+              <label>Estado</label>
+              <div class="fi" style="color:#86EFAC">Activo ▾</div>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-cancel">Cancelar</button>
+            <button class="btn-save">Guardar Producto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <pre><code><span class="hljs-comment">// productos.component.ts — guardar producto</span>
+<span class="hljs-key">guardar</span>() {
+  <span class="hljs-key">if</span> (this.form.invalid) <span class="hljs-key">return</span>;
+  this.guardando.set(<span class="hljs-key">true</span>);
+
+  <span class="hljs-key">const</span> body: <span class="hljs-type">ProductoRequest</span> = this.form.value;
+  <span class="hljs-key">const</span> accion = this.modoEdicion()
+    ? this.productoService.update(this.idEditando!, body)  <span class="hljs-comment">// PUT</span>
+    : this.productoService.create(body);                   <span class="hljs-comment">// POST</span>
+
+  accion.subscribe({
+    next: () =&gt; {
+      this.alerta.set({ tipo: <span class="hljs-str">'ok'</span>, msg: <span class="hljs-str">'Producto guardado correctamente'</span> });
+      this.modalAbierto.set(<span class="hljs-key">false</span>);
+      this.cargar();  <span class="hljs-comment">// refresca la lista</span>
+    },
+    error: () =&gt; this.alerta.set({ tipo: <span class="hljs-str">'err'</span>, msg: <span class="hljs-str">'Error al guardar el producto'</span> }),
+    complete: () =&gt; this.guardando.set(<span class="hljs-key">false</span>)
+  });
+}</code></pre>
+
+    <!-- EDITAR -->
+    <h3>✏️ U — Update: Editar un producto existente</h3>
+
+    <p>Al hacer clic en el botón <strong>"Editar"</strong> de una fila, el componente ejecuta:</p>
+    <ol style="padding-left:24px;font-size:14px;line-height:2.2">
+      <li>Activa <code class="inline">modoEdicion = signal(true)</code> y guarda el ID del producto en <code class="inline">idEditando</code>.</li>
+      <li>Parchea el formulario con los datos actuales del producto usando <code class="inline">form.patchValue(producto)</code>.</li>
+      <li>Abre el modal con los campos pre-cargados.</li>
+      <li>Al guardar, el servicio ejecuta <code class="inline">PUT /api/productos/{id}</code> con el body actualizado.</li>
+      <li>El backend actualiza el registro en MySQL y devuelve el objeto modificado.</li>
+    </ol>
+
+    <!-- ELIMINAR -->
+    <h3>🗑 D — Delete: Eliminar un producto</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Confirmación del usuario</strong>
+          <p>Al hacer clic en "Eliminar", el componente ejecuta <code class="inline">confirm('¿Seguro que deseas eliminar este producto?')</code>. Si el usuario cancela, no se ejecuta nada.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>DELETE /api/productos/{id}</strong>
+          <p>Si confirma, el servicio ejecuta <code class="inline">ProductoService.delete(id)</code> que lanza <code class="inline">DELETE /api/productos/4</code>. Spring Boot elimina el registro y responde con <strong>HTTP 200</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Recarga y alerta</strong>
+          <p>Igual que en create/update: se llama <code class="inline">cargar()</code> y se muestra la alerta de éxito. Si el backend rechaza la eliminación (por integridad referencial), se muestra la alerta de error.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEARCH -->
+    <h3>🔍 Filtrado local por texto</h3>
+    <p>La búsqueda es <strong>instantánea y sin peticiones al backend</strong>. Al escribir en el campo de búsqueda, el componente filtra el array <code class="inline">productos</code> (ya cargado en memoria) y actualiza <code class="inline">filtrados</code>:</p>
+    <pre><code><span class="hljs-fn">filtrar</span>(termino: string) {
+  <span class="hljs-key">const</span> q = termino.toLowerCase();
+  this.filtrados = this.productos.filter(p =&gt;
+    p.nombre.toLowerCase().includes(q) ||
+    p.sku.toLowerCase().includes(q)   ||
+    p.categoriaNombre.toLowerCase().includes(q)
+  );
+}</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="s5">
+    <h2><span class="icon">🔔</span> 05 · Sistema de Alertas</h2>
+
+    <p>Cada componente tiene una señal <code class="inline">alerta = signal&lt;{tipo, msg} | null&gt;(null)</code>. Cuando se completa una operación, se activa con un mensaje. La alerta desaparece automáticamente tras 5 segundos.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px;font-size:14px;color:#166534;margin-bottom:12px">
+          ✅ <strong>Producto guardado correctamente</strong>
+        </div>
+        <p style="font-size:13px;color:var(--muted)">Se muestra cuando el backend responde con HTTP 200/201. Clase Tailwind: <code class="inline">erp-alert-success</code></p>
+      </div>
+      <div class="card">
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:12px;font-size:14px;color:#991B1B;margin-bottom:12px">
+          ❌ <strong>Error al eliminar el producto</strong>
+        </div>
+        <p style="font-size:13px;color:var(--muted)">Se muestra cuando el backend responde con HTTP 4xx/5xx. Clase Tailwind: <code class="inline">erp-alert-danger</code></p>
+      </div>
+    </div>
+
+    <pre><code><span class="hljs-comment">// auto-dismiss a los 5 segundos</span>
+<span class="hljs-fn">mostrarAlerta</span>(tipo: <span class="hljs-str">'ok'</span> | <span class="hljs-str">'err'</span>, msg: string) {
+  this.alerta.set({ tipo, msg });
+  setTimeout(() =&gt; this.alerta.set(<span class="hljs-key">null</span>), <span class="hljs-num">5000</span>);
+}</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="s6">
+    <h2><span class="icon">🚪</span> 06 · Cierre de Sesión (Logout)</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Usuario hace clic en "Cerrar sesión" en el Navbar</strong>
+          <p>El <code class="inline">NavbarComponent</code> llama a <code class="inline">AuthService.logout()</code>. No se hace ninguna petición al backend.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Se limpia el localStorage</strong>
+          <p>Se eliminan <code class="inline">localStorage.removeItem('erp_token')</code> y <code class="inline">localStorage.removeItem('erp_user')</code>. Después de esto, el token Base64 desaparece de la memoria del navegador.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Redirección a /login</strong>
+          <p>El <code class="inline">router.navigate(['/login'])</code> lleva al usuario de vuelta a la pantalla de inicio. Si intenta usar el botón "Atrás" del navegador, el <code class="inline">authGuard</code> detectará que no hay token y volverá a redirigirlo a <code class="inline">/login</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section id="s7">
+    <h2><span class="icon">📚</span> 07 · Resumen Técnico de Capas</h2>
+
+    <table>
+      <thead>
+        <tr><th>Capa</th><th>Archivo</th><th>Responsabilidad</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">Guard</span></td><td><code class="inline">auth.guard.ts</code></td><td>Verifica que haya token antes de activar rutas protegidas</td></tr>
+        <tr><td><span class="badge badge-blue">Interceptor</span></td><td><code class="inline">basic-auth.interceptor.ts</code></td><td>Añade el header Authorization a todas las peticiones /api/</td></tr>
+        <tr><td><span class="badge badge-yellow">Service</span></td><td><code class="inline">auth.service.ts</code></td><td>Login, logout, token, perfil del usuario</td></tr>
+        <tr><td><span class="badge badge-yellow">Service</span></td><td><code class="inline">producto.service.ts</code></td><td>CRUD de productos: GET, POST, PUT, DELETE</td></tr>
+        <tr><td><span class="badge badge-green">Model</span></td><td><code class="inline">producto.model.ts</code></td><td>Interfaz TypeScript con la forma del dato</td></tr>
+        <tr><td><span class="badge badge-red">Component</span></td><td><code class="inline">productos.component.ts</code></td><td>Estado UI (señales), lógica de formulario, orquesta las llamadas al servicio</td></tr>
+        <tr><td><span class="badge badge-red">Template</span></td><td><code class="inline">productos.component.html</code></td><td>HTML con directivas Angular y clases Tailwind</td></tr>
+        <tr><td><span class="badge badge-blue">Config</span></td><td><code class="inline">app.config.ts</code></td><td>Registra HttpClient, router e interceptores globalmente</td></tr>
+        <tr><td><span class="badge badge-blue">Config</span></td><td><code class="inline">proxy.conf.js</code></td><td>Redirige /api/* a localhost:8080 durante desarrollo</td></tr>
+      </tbody>
+    </table>
+
+    <div class="box info" style="margin-top:24px">
+      <div class="box-icon">🎓</div>
+      <div class="box-body">
+        <strong>Concepto clave: Signals de Angular</strong>
+        Este proyecto usa <code class="inline">signal()</code> de Angular en lugar del clásico <code class="inline">BehaviorSubject</code> de RxJS para el estado local del componente. Los signals son reactivos: cuando su valor cambia, Angular actualiza solo la parte del DOM que los usa, sin necesidad de <code class="inline">ChangeDetectionStrategy.OnPush</code> manual.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Distribuidora Andina SAC — Sistema ERP</strong><br>
+  Documentación generada para curso de Desarrollo de Aplicaciones Web I · CIBERTEC 2025
+</footer>
+
+</body>
+</html>

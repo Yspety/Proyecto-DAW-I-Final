@@ -1,0 +1,785 @@
+{
+	"info": {
+		"_postman_id": "9836db7b-e084-4893-885d-72d5e69138ef",
+		"name": "Andina SAC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49309838",
+		"_collection_link": "https://jason-dav-del-5194074.postman.co/workspace/DD's's-Workspace~5dc95281-0477-48a0-80b2-336451dd8572/collection/49309838-9836db7b-e084-4893-885d-72d5e69138ef?action=share&source=collection_link&creator=49309838"
+	},
+	"item": [
+		{
+			"name": "Almacen",
+			"item": [
+				{
+					"name": "Crear Almacen",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte\",\r\n  \"tipo\": \"SECUNDARIO\",\r\n  \"direccion\": \"Av. Lima 123\",\r\n  \"activo\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/almacenes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"almacenes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Almacener",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/almacenes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"almacenes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Almacen por Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/almacenes/{{idAlmacen}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"almacenes",
+								"{{idAlmacen}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Almacen",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte - Actualizado\",\r\n  \"tipo\": \"PRINCIPAL\",\r\n  \"direccion\": \"Av. Lima 456\",\r\n  \"activo\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/almacenes/{{idAlmacen}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"almacenes",
+								"{{idAlmacen}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Almacen",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte - Actualizado\",\r\n  \"tipo\": \"PRINCIPAL\",\r\n  \"direccion\": \"Av. Lima 456\",\r\n  \"activo\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/almacenes/{{idAlmacen}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"almacenes",
+								"{{idAlmacen}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categoria",
+			"item": [
+				{
+					"name": "Crear Categoria",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n  \"nombre\": \"ELECTRÓNICA\",\r\n  \"descripcion\": \"Productos electrónicos y tecnológicos\",\r\n  \"activo\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Categoria",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Categoriapor Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias/{{idCategoria}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"{{idCategoria}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Categoria",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Electrónica y Tecnología - Actualizada\",\r\n  \"descripcion\": \"Todo tipo de aparatos electrónicos\",\r\n  \"activo\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias/{{idCategoria}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"{{idCategoria}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Categoria",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte - Actualizado\",\r\n  \"tipo\": \"PRINCIPAL\",\r\n  \"direccion\": \"Av. Lima 456\",\r\n  \"activo\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categorias/{{idCategoria}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"{{idCategoria}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Inventario",
+			"item": [
+				{
+					"name": "Crear Inventario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"almacenId\": 2,\r\n  \"productoId\": 3,\r\n  \"cantidad\": 150.50,\r\n  \"stockMin\": 20.00,\r\n  \"stockMax\": 500.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"inventario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Inventario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"inventario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Inventario por Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/{{idInventario}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"inventario",
+								"{{idInventario}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Inventario",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"cantidad\": 250.00,\r\n  \"stockMin\": 30.00,\r\n  \"stockMax\": 600.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/{{idInventario}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"inventario",
+								"{{idInventario}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Inventario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte - Actualizado\",\r\n  \"tipo\": \"PRINCIPAL\",\r\n  \"direccion\": \"Av. Lima 456\",\r\n  \"activo\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/inventario/{{idInventario}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"inventario",
+								"{{idInventario}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movimientos",
+			"item": [
+				{
+					"name": "Crear Movimiento",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"almacenId\": 1,\r\n  \"productoId\": 2,\r\n  \"tipoMovimiento\": \"ENTRADA\",\r\n  \"cantidad\": 50.00,\r\n  \"costoUnitario\": 2.50,\r\n  \"referencia\": \"Compra Nro. 002\",\r\n  \"usuario\": \"María García\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/movimientos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movimientos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Movimientos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/movimientos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movimientos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Movimiento por Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/movimientos/{{idMovimiento}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"{{idMovimiento}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Movimiento",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"almacenId\": 1,\r\n  \"productoId\": 1,\r\n  \"tipoMovimiento\": \"ENTRADA\",\r\n  \"cantidad\": 80.000000,\r\n  \"costoUnitario\": 3.50,\r\n  \"referencia\": \"Compra Nro. 002 - Modificado\",\r\n  \"usuario\": \"María García\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/movimientos/{{idMovimiento}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"{{idMovimiento}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Movimiento",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte - Actualizado\",\r\n  \"tipo\": \"PRINCIPAL\",\r\n  \"direccion\": \"Av. Lima 456\",\r\n  \"activo\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/movimientos/{{idMovimiento}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movimientos",
+								"{{idMovimiento}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Producto",
+			"item": [
+				{
+					"name": "Crear Producto",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"sku\": \"BEB-003\",\r\n  \"nombre\": \"Coca Cola 1L\",\r\n  \"descripcion\": \"Gaseosa\",\r\n  \"categoriaId\": 1,\r\n  \"codigoBarras\": \"123456789332\",\r\n  \"precioLista\": 6.50,\r\n  \"activo\": true,\r\n  \"unidadId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/productos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Producto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/productos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Producto por Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/productos/{{idProducto}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"{{idProducto}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Producto",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"sku\": \"BEB-003\",\r\n  \"nombre\": \"Coca Cola 1 1/2L - Actualizada\",\r\n  \"descripcion\": \"Zero\",\r\n  \"categoriaId\": 1,\r\n  \"codigoBarras\": \"123456789802\",\r\n  \"precioLista\": 8.50,\r\n  \"activo\": true,\r\n  \"unidadId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/productos/{{idProducto}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"{{idProducto}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Producto",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte - Actualizado\",\r\n  \"tipo\": \"PRINCIPAL\",\r\n  \"direccion\": \"Av. Lima 456\",\r\n  \"activo\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/productos/{{idProducto}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"{{idProducto}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Unidad",
+			"item": [
+				{
+					"name": "Crear Unidad",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"codigo\": \"KG\",\r\n  \"nombre\": \"Kilogramo\",\r\n  \"factorBase\": 1.0,\r\n  \"esBase\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/unidades",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"unidades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Unidad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/unidades",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"unidades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Unidad por Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/unidades/{{idUnidad}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"unidades",
+								"{{idUnidad}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Unidad",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"codigo\": \"KG\",\r\n  \"nombre\": \"Kilogramo (Peso)\",\r\n  \"factorBase\": 1.0,\r\n  \"esBase\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/unidades/{{idUnidad}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"unidades",
+								"{{idUnidad}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Unidad",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Almacén Norte - Actualizado\",\r\n  \"tipo\": \"PRINCIPAL\",\r\n  \"direccion\": \"Av. Lima 456\",\r\n  \"activo\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/unidades/{{idUnidad}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"unidades",
+								"{{idUnidad}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "idAlmacen",
+			"value": ""
+		},
+		{
+			"key": "idCategoria",
+			"value": ""
+		},
+		{
+			"key": "idInventario",
+			"value": ""
+		},
+		{
+			"key": "idMovimiento",
+			"value": ""
+		},
+		{
+			"key": "idProducto",
+			"value": ""
+		},
+		{
+			"key": "idUnidad",
+			"value": ""
+		}
+	]
+}

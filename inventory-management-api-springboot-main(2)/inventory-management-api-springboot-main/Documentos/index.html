@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentación — Sistema de Inventario Distribuidora Andina SAC</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #334155;
+      --accent: #38bdf8;
+      --green: #4ade80;
+      --yellow: #facc15;
+      --red: #f87171;
+      --orange: #fb923c;
+      --purple: #a78bfa;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    .header {
+      background: linear-gradient(135deg, #0c2340 0%, #0f172a 60%, #1a1a2e 100%);
+      padding: 3.5rem 2rem;
+      text-align: center;
+      border-bottom: 3px solid var(--accent);
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(56,189,248,0.08) 0%, transparent 70%);
+    }
+    .header h1 { font-size: 2.6rem; color: var(--accent); margin-bottom: 0.4rem; position: relative; }
+    .header .subtitle { color: var(--muted); font-size: 1.15rem; margin-bottom: 1.2rem; position: relative; }
+    .badge {
+      display: inline-block; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.35);
+      color: var(--accent); padding: 0.25rem 0.85rem; border-radius: 9999px; font-size: 0.82rem; margin: 0.2rem;
+    }
+
+    .container { max-width: 1150px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+    .section-title {
+      font-size: 1.4rem; color: var(--accent); margin: 2.5rem 0 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--surface2);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+
+    /* Stack boxes */
+    .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .stack-box {
+      background: var(--surface); border-radius: 10px; padding: 1.25rem;
+      border-left: 4px solid; transition: transform 0.2s;
+    }
+    .stack-box:hover { transform: translateY(-2px); }
+    .stack-box.spring { border-color: var(--green); }
+    .stack-box.angular { border-color: var(--red); }
+    .stack-box.mysql { border-color: var(--orange); }
+    .stack-box.docker { border-color: var(--accent); }
+    .stack-box .sb-title { font-weight: bold; margin-bottom: 0.4rem; font-size: 1rem; }
+    .stack-box.spring .sb-title { color: var(--green); }
+    .stack-box.angular .sb-title { color: var(--red); }
+    .stack-box.mysql .sb-title { color: var(--orange); }
+    .stack-box.docker .sb-title { color: var(--accent); }
+    .stack-box .sb-detail { font-size: 0.83rem; color: var(--muted); }
+
+    /* Architecture Flow */
+    .arch-flow {
+      display: flex; align-items: stretch; gap: 0; margin: 1.5rem 0;
+      background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--surface2);
+    }
+    .arch-step {
+      flex: 1; padding: 1.25rem 0.75rem; text-align: center;
+      border-right: 1px solid var(--surface2); position: relative;
+    }
+    .arch-step:last-child { border-right: none; }
+    .arch-step::after {
+      content: '→'; position: absolute; right: -0.6rem; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 1.1rem; z-index: 2;
+    }
+    .arch-step:last-child::after { display: none; }
+    .arch-step .as-icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .arch-step .as-title { font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; }
+    .arch-step .as-desc { font-size: 0.7rem; color: var(--muted); }
+    .arch-step.c1 .as-title { color: var(--purple); }
+    .arch-step.c2 .as-title { color: var(--red); }
+    .arch-step.c3 .as-title { color: var(--accent); }
+    .arch-step.c4 .as-title { color: var(--green); }
+    .arch-step.c5 .as-title { color: var(--yellow); }
+    .arch-step.c6 .as-title { color: var(--orange); }
+
+    /* Nav Cards */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+    .card {
+      background: var(--surface); border-radius: 12px; padding: 1.75rem;
+      border: 1px solid var(--surface2); text-decoration: none; color: var(--text);
+      transition: all 0.25s; display: block;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(56,189,248,0.12); }
+    .card-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+    .card-title { font-size: 1.15rem; font-weight: bold; color: var(--accent); margin-bottom: 0.5rem; }
+    .card-desc { font-size: 0.88rem; color: var(--muted); }
+    .card-tags { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-size: 0.75rem; padding: 0.15rem 0.55rem; border-radius: 4px;
+      background: var(--surface2); color: var(--muted); font-family: monospace;
+    }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--surface2); }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: var(--surface2); color: var(--accent); padding: 0.75rem 1rem; text-align: left; font-size: 0.9rem; }
+    td { padding: 0.65rem 1rem; border-bottom: 1px solid var(--surface2); font-size: 0.88rem; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(56,189,248,0.04); }
+    .method {
+      display: inline-block; padding: 0.18rem 0.55rem; border-radius: 4px;
+      font-size: 0.78rem; font-weight: bold; font-family: monospace; min-width: 55px; text-align: center;
+    }
+    .GET    { background: #064e3b; color: #34d399; }
+    .POST   { background: #1e3a5f; color: #60a5fa; }
+    .PUT    { background: #78350f; color: #fbbf24; }
+    .DELETE { background: #7f1d1d; color: #fca5a5; }
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace; background: var(--surface2);
+      padding: 0.1rem 0.45rem; border-radius: 4px; font-size: 0.84em; color: var(--green);
+    }
+
+    /* Envelope */
+    .code-block {
+      background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px;
+      padding: 1.5rem; font-family: 'Consolas', monospace; font-size: 0.88rem; overflow-x: auto;
+    }
+    .json-key   { color: var(--accent); }
+    .json-str   { color: var(--yellow); }
+    .json-bool  { color: var(--green); }
+    .json-num   { color: var(--orange); }
+    .json-null  { color: var(--red); }
+    .json-comment { color: var(--muted); font-style: italic; }
+
+    /* Package structure */
+    .pkg-tree {
+      background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px;
+      padding: 1.5rem; font-family: 'Consolas', monospace; font-size: 0.83rem; line-height: 1.8;
+    }
+    .pkg-dir  { color: var(--accent); }
+    .pkg-file { color: var(--text); }
+    .pkg-note { color: var(--muted); }
+
+    footer {
+      text-align: center; padding: 2.5rem 2rem; color: var(--muted); font-size: 0.85rem;
+      border-top: 1px solid var(--surface2); margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#128746; Sistema de Gestión de Inventario</h1>
+  <p class="subtitle">Distribuidora Andina SAC — Documentación Técnica del Sistema</p>
+  <div>
+    <span class="badge">Spring Boot 3.5.7</span>
+    <span class="badge">Java 17</span>
+    <span class="badge">Spring Security 6</span>
+    <span class="badge">MySQL 8</span>
+    <span class="badge">Angular 18</span>
+    <span class="badge">MapStruct</span>
+    <span class="badge">Docker Compose</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Stack -->
+  <h2 class="section-title">&#128295; Stack Tecnológico</h2>
+  <div class="stack-grid">
+    <div class="stack-box spring">
+      <div class="sb-title">Backend REST API</div>
+      <div class="sb-detail">Spring Boot 3.5.7 · Java 17<br>Spring Security 6 · HTTP Basic Auth<br>MapStruct · Lombok · JPA/Hibernate<br>Puerto: <strong>8080</strong></div>
+    </div>
+    <div class="stack-box angular">
+      <div class="sb-title">Frontend Angular</div>
+      <div class="sb-detail">Angular 18 · TypeScript<br>Standalone Components · RxJS<br>HttpClient con interceptor de auth<br>Puerto: <strong>4200</strong></div>
+    </div>
+    <div class="stack-box mysql">
+      <div class="sb-title">Base de Datos</div>
+      <div class="sb-detail">MySQL 8.0<br>Base de datos: <code>erp_productos</code><br>Esquema manual via Script.sql<br>JPA DDL-Auto: <strong>none</strong></div>
+    </div>
+    <div class="stack-box docker">
+      <div class="sb-title">Infraestructura Docker</div>
+      <div class="sb-detail">Docker Compose<br>MySQL host puerto <strong>3307</strong> (evita conflicto)<br>API en puerto <strong>8080</strong><br>Init script automático</div>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <h2 class="section-title">&#127760; Arquitectura en Capas</h2>
+  <div class="arch-flow">
+    <div class="arch-step c1">
+      <div class="as-icon">&#128187;</div>
+      <div class="as-title">FRONTEND</div>
+      <div class="as-desc">Angular 18<br>HttpClient<br>BasicAuth Header</div>
+    </div>
+    <div class="arch-step c2">
+      <div class="as-icon">&#128274;</div>
+      <div class="as-title">SPRING SECURITY</div>
+      <div class="as-desc">Filter Chain<br>BasicAuth Filter<br>BCrypt verify</div>
+    </div>
+    <div class="arch-step c3">
+      <div class="as-icon">&#128260;</div>
+      <div class="as-title">REST CONTROLLER</div>
+      <div class="as-desc">@RestController<br>/api/**<br>Envelope JSON</div>
+    </div>
+    <div class="arch-step c4">
+      <div class="as-icon">&#9881;</div>
+      <div class="as-title">SERVICE</div>
+      <div class="as-desc">@Service<br>@Transactional<br>Lógica de negocio</div>
+    </div>
+    <div class="arch-step c5">
+      <div class="as-icon">&#128203;</div>
+      <div class="as-title">REPOSITORY</div>
+      <div class="as-desc">Spring Data JPA<br>CrudRepository<br>Queries JPQL</div>
+    </div>
+    <div class="arch-step c6">
+      <div class="as-icon">&#128190;</div>
+      <div class="as-title">MySQL DB</div>
+      <div class="as-desc">erp_productos<br>Tables SQL<br>JPA entities</div>
+    </div>
+  </div>
+
+  <!-- Package Structure -->
+  <h2 class="section-title">&#128193; Estructura de Paquetes (Java)</h2>
+  <div class="pkg-tree">
+<span class="pkg-dir">pe.com.andinadistribuidora/</span>
+├── <span class="pkg-dir">api/</span>                   <span class="pkg-note">← Capa de presentación REST</span>
+│   ├── <span class="pkg-file">ProductoRestController.java</span>  <span class="pkg-note">@RestController /api/productos</span>
+│   ├── <span class="pkg-file">AlmacenRestController.java</span>   <span class="pkg-note">@RestController /api/almacenes</span>
+│   ├── <span class="pkg-file">UsuarioRestController.java</span>   <span class="pkg-note">@RestController /api/usuarios</span>
+│   ├── <span class="pkg-dir">request/</span>             <span class="pkg-note">← DTOs de entrada (lo que recibe el API)</span>
+│   ├── <span class="pkg-dir">response/</span>            <span class="pkg-note">← DTOs de salida (lo que devuelve el API)</span>
+│   └── <span class="pkg-dir">handler/</span>
+│       └── <span class="pkg-file">GlobalExceptionHandler.java</span>  <span class="pkg-note">@RestControllerAdvice</span>
+├── <span class="pkg-dir">config/</span>                <span class="pkg-note">← Spring Security y configuración</span>
+│   ├── <span class="pkg-file">SecurityConfig.java</span>          <span class="pkg-note">2 filter chains (@Order 1 y 2)</span>
+│   ├── <span class="pkg-file">UsuarioPrincipal.java</span>        <span class="pkg-note">Implementa UserDetails (inmutable)</span>
+│   ├── <span class="pkg-file">UserDetailsServiceImpl.java</span>  <span class="pkg-note">Carga usuario desde DB</span>
+│   ├── <span class="pkg-file">AuthSuccessHandler.java</span>     <span class="pkg-note">Escribe atributos de sesión MVC</span>
+│   └── <span class="pkg-file">PasswordMigrationRunner.java</span> <span class="pkg-note">Migra passwords a BCrypt</span>
+├── <span class="pkg-dir">entity/</span>                <span class="pkg-note">← JPA Entities (@Entity)</span>
+│   ├── <span class="pkg-file">Producto.java</span>   <span class="pkg-file">Usuario.java</span>   <span class="pkg-file">Almacen.java</span>
+│   └── <span class="pkg-file">Inventario.java</span>  <span class="pkg-file">Rol.java</span>  <span class="pkg-file">Categoria.java</span>  <span class="pkg-file">Unidad.java</span>
+├── <span class="pkg-dir">mapper/</span>                <span class="pkg-note">← MapStruct (Request→Entity, Entity→Response)</span>
+├── <span class="pkg-dir">repository/</span>            <span class="pkg-note">← Spring Data JPA Repositories</span>
+├── <span class="pkg-dir">service/</span>               <span class="pkg-note">← Interfaces de servicio</span>
+│   └── <span class="pkg-dir">impl/</span>                <span class="pkg-note">← Implementaciones con lógica de negocio</span>
+└── <span class="pkg-dir">exception/</span>             <span class="pkg-note">← NotFoundException · BusinessException</span>
+  </div>
+
+  <!-- Navigation Cards -->
+  <h2 class="section-title">&#128214; Documentos Detallados</h2>
+  <div class="card-grid">
+    <a href="spring-security-diagrama.html" class="card">
+      <div class="card-icon">&#128274;</div>
+      <div class="card-title">Spring Security — Diagrama Completo</div>
+      <div class="card-desc">
+        Análisis paso a paso de cómo funciona Spring Security en este proyecto: los dos filter chains,
+        HTTP Basic Auth, cómo se verifica una contraseña con BCrypt, qué hace cada clase de configuración,
+        y qué sucede cuando las credenciales son incorrectas.
+      </div>
+      <div class="card-tags">
+        <span class="tag">SecurityConfig</span>
+        <span class="tag">BasicAuthFilter</span>
+        <span class="tag">UserDetailsService</span>
+        <span class="tag">BCrypt</span>
+        <span class="tag">UsuarioPrincipal</span>
+      </div>
+    </a>
+    <a href="flujo-crud-producto.html" class="card">
+      <div class="card-icon">&#128230;</div>
+      <div class="card-title">Flujo CRUD Completo — Ejemplo con Producto</div>
+      <div class="card-desc">
+        Trazabilidad end-to-end de una petición REST: desde el header de autenticación del frontend
+        hasta la base de datos y de vuelta al cliente. Incluye ejemplos JSON reales para GET, POST,
+        PUT y DELETE sobre el recurso Producto.
+      </div>
+      <div class="card-tags">
+        <span class="tag">GET /api/productos</span>
+        <span class="tag">POST</span>
+        <span class="tag">PUT</span>
+        <span class="tag">DELETE</span>
+        <span class="tag">envelope JSON</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- API Reference -->
+  <h2 class="section-title">&#128203; Referencia de Endpoints REST</h2>
+  <p style="color:var(--muted); margin-bottom:1rem;">
+    Base URL: <code>http://localhost:8080</code> &nbsp;|&nbsp;
+    Autenticación: <code>Authorization: Basic &lt;base64(usuario:password)&gt;</code> &nbsp;|&nbsp;
+    Content-Type: <code>application/json</code>
+  </p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Recurso</th><th>Método</th><th>Ruta</th><th>Descripción</th><th>Rol mínimo</th></tr>
+      <tr><td>Almacén</td>    <td><span class="method GET">GET</span></td>    <td><code>/api/almacenes</code></td>          <td>Listar todos los almacenes</td>       <td>Cualquier usuario</td></tr>
+      <tr><td>Almacén</td>    <td><span class="method GET">GET</span></td>    <td><code>/api/almacenes/activos</code></td>  <td>Solo almacenes activos</td>          <td>Cualquier usuario</td></tr>
+      <tr><td>Almacén</td>    <td><span class="method GET">GET</span></td>    <td><code>/api/almacenes/{id}</code></td>     <td>Obtener un almacén por ID</td>       <td>Cualquier usuario</td></tr>
+      <tr><td>Almacén</td>    <td><span class="method POST">POST</span></td>  <td><code>/api/almacenes</code></td>          <td>Crear nuevo almacén</td>             <td>Cualquier usuario</td></tr>
+      <tr><td>Almacén</td>    <td><span class="method PUT">PUT</span></td>    <td><code>/api/almacenes/{id}</code></td>     <td>Actualizar almacén</td>              <td>Cualquier usuario</td></tr>
+      <tr><td>Almacén</td>    <td><span class="method DELETE">DELETE</span></td><td><code>/api/almacenes/{id}</code></td>   <td>Eliminar almacén</td>                <td>Cualquier usuario</td></tr>
+      <tr><td>Producto</td>   <td><span class="method GET">GET</span></td>    <td><code>/api/productos</code></td>          <td>Listar todos los productos</td>      <td>Cualquier usuario</td></tr>
+      <tr><td>Producto</td>   <td><span class="method GET">GET</span></td>    <td><code>/api/productos/{id}</code></td>     <td>Obtener un producto por ID</td>      <td>Cualquier usuario</td></tr>
+      <tr><td>Producto</td>   <td><span class="method POST">POST</span></td>  <td><code>/api/productos</code></td>          <td>Crear nuevo producto</td>            <td>Cualquier usuario</td></tr>
+      <tr><td>Producto</td>   <td><span class="method PUT">PUT</span></td>    <td><code>/api/productos/{id}</code></td>     <td>Actualizar producto</td>             <td>Cualquier usuario</td></tr>
+      <tr><td>Producto</td>   <td><span class="method DELETE">DELETE</span></td><td><code>/api/productos/{id}</code></td>   <td>Eliminar producto</td>               <td>Cualquier usuario</td></tr>
+      <tr><td>Categoría</td>  <td><span class="method GET">GET</span></td>    <td><code>/api/categorias</code></td>         <td>Listar categorías</td>               <td>Cualquier usuario</td></tr>
+      <tr><td>Unidad</td>     <td><span class="method GET">GET</span></td>    <td><code>/api/unidades</code></td>           <td>Listar unidades de medida</td>       <td>Cualquier usuario</td></tr>
+      <tr><td>Inventario</td> <td><span class="method GET">GET</span></td>    <td><code>/api/inventario</code></td>         <td>Listar registros de inventario</td>  <td>Cualquier usuario</td></tr>
+      <tr><td>Movimiento</td> <td><span class="method GET">GET</span></td>    <td><code>/api/movimientos</code></td>        <td>Listar movimientos</td>              <td>Cualquier usuario</td></tr>
+      <tr><td>Movimiento</td> <td><span class="method POST">POST</span></td>  <td><code>/api/movimientos</code></td>        <td>Registrar movimiento (ENTRADA/SALIDA/AJUSTE)</td><td>Cualquier usuario</td></tr>
+      <tr><td>Usuario</td>    <td><span class="method GET">GET</span></td>    <td><code>/api/usuarios/me</code></td>        <td>Datos del usuario autenticado</td>   <td>Cualquier usuario</td></tr>
+      <tr><td>Usuario</td>    <td><span class="method GET">GET</span></td>    <td><code>/api/usuarios</code></td>           <td>Listar todos los usuarios</td>       <td><strong>ADMIN</strong></td></tr>
+      <tr><td>Usuario</td>    <td><span class="method POST">POST</span></td>  <td><code>/api/usuarios</code></td>           <td>Crear usuario</td>                   <td><strong>ADMIN</strong></td></tr>
+      <tr><td>Usuario</td>    <td><span class="method PUT">PUT</span></td>    <td><code>/api/usuarios/{id}</code></td>      <td>Actualizar usuario</td>              <td><strong>ADMIN</strong></td></tr>
+      <tr><td>Usuario</td>    <td><span class="method DELETE">DELETE</span></td><td><code>/api/usuarios/{id}</code></td>    <td>Eliminar usuario</td>                <td><strong>ADMIN</strong></td></tr>
+      <tr><td>Rol</td>        <td><span class="method GET">GET</span></td>    <td><code>/api/roles</code></td>              <td>Listar roles</td>                    <td>Cualquier usuario</td></tr>
+    </table>
+  </div>
+
+  <!-- Envelope Format -->
+  <h2 class="section-title">&#128233; Formato de Respuesta — Envelope Estándar</h2>
+  <p style="color:var(--muted); margin-bottom:1rem;">
+    Todos los endpoints devuelven siempre la misma estructura envolvente (envelope pattern):
+  </p>
+  <div class="code-block">
+<span class="json-comment">// ✅ Respuesta exitosa con lista (200 OK)</span>
+{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"message"</span>: <span class="json-str">"Productos listados correctamente"</span>,
+  <span class="json-key">"data"</span>: [ { ... }, { ... } ],    <span class="json-comment">// array de objetos</span>
+  <span class="json-key">"total"</span>: <span class="json-num">5</span>                         <span class="json-comment">// solo en listados</span>
+}
+
+<span class="json-comment">// ✅ Respuesta exitosa con objeto único (200 OK / 201 Created)</span>
+{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"message"</span>: <span class="json-str">"Producto encontrado"</span>,
+  <span class="json-key">"data"</span>: { <span class="json-key">"id"</span>: <span class="json-num">1</span>, <span class="json-key">"sku"</span>: <span class="json-str">"PRD-001"</span>, ... }
+}
+
+<span class="json-comment">// ❌ Respuesta de error (404 / 422 / 500)</span>
+{
+  <span class="json-key">"success"</span>: <span class="json-bool">false</span>,
+  <span class="json-key">"message"</span>: <span class="json-str">"Producto no encontrado: 99"</span>,
+  <span class="json-key">"timestamp"</span>: <span class="json-str">"2024-01-15T10:30:00"</span>
+}
+
+<span class="json-comment">// ❌ Sin autenticación (401 Unauthorized) — respuesta de Spring Security</span>
+{
+  <span class="json-comment">// No body, solo header WWW-Authenticate: Basic realm="Realm"</span>
+}
+  </div>
+
+  <!-- Curl Examples -->
+  <h2 class="section-title">&#128187; Ejemplos con cURL (para pruebas)</h2>
+  <div class="code-block">
+<span class="json-comment"># Listar productos (usuario: admin, password: admin)</span>
+curl -u admin:admin http://localhost:8080/api/productos
+
+<span class="json-comment"># Crear un producto</span>
+curl -u admin:admin -X POST http://localhost:8080/api/productos \
+  -H "Content-Type: application/json" \
+  -d '{"sku":"PRD-001","nombre":"Arroz Extra","categoriaId":1,"unidadId":1,"precioLista":3.50,"activo":true}'
+
+<span class="json-comment"># Obtener producto por ID</span>
+curl -u admin:admin http://localhost:8080/api/productos/1
+
+<span class="json-comment"># Actualizar producto</span>
+curl -u admin:admin -X PUT http://localhost:8080/api/productos/1 \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Arroz Extra Premium","precioLista":4.00}'
+
+<span class="json-comment"># Eliminar producto</span>
+curl -u admin:admin -X DELETE http://localhost:8080/api/productos/1
+  </div>
+
+</div>
+
+<footer>
+  Sistema de Gestión de Inventario &nbsp;·&nbsp; Distribuidora Andina SAC &nbsp;·&nbsp; Spring Boot 3.5.7 / Java 17
+  <br><br>
+  <a href="spring-security-diagrama.html" style="color:var(--accent); text-decoration:none; margin: 0 1rem;">&#128274; Spring Security</a>
+  <a href="flujo-crud-producto.html" style="color:var(--accent); text-decoration:none; margin: 0 1rem;">&#128230; Flujo CRUD</a>
+</footer>
+
+</body>
+</html>

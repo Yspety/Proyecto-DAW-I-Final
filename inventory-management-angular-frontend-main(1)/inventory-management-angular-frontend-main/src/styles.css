@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --erp-focus-ring: 0 0 0 3px rgba(91, 155, 213, 0.15);
+}
+
+html, body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: #EEF2F8;
+  min-height: 100vh;
+  margin: 0;
+}
+
+@layer components {
+
+  .erp-input {
+    @apply w-full h-[42px] px-3.5 text-sm text-erp-text bg-erp-card
+           border border-erp-border rounded-lg
+           placeholder:text-[#B4B2A9] focus:outline-none focus:bg-white
+           focus:border-erp-accent transition-colors;
+  }
+  .erp-input:focus { box-shadow: var(--erp-focus-ring); }
+
+  .erp-textarea {
+    @apply w-full px-3.5 py-2.5 text-sm text-erp-text bg-erp-card
+           border border-erp-border rounded-lg
+           placeholder:text-[#B4B2A9] focus:outline-none focus:bg-white
+           focus:border-erp-accent transition-colors resize-y;
+  }
+  .erp-textarea:focus { box-shadow: var(--erp-focus-ring); }
+
+  .erp-select {
+    @apply w-full h-[42px] px-3.5 text-sm text-erp-text bg-erp-card
+           border border-erp-border rounded-lg
+           focus:outline-none focus:bg-white focus:border-erp-accent transition-colors;
+  }
+  .erp-select:focus { box-shadow: var(--erp-focus-ring); }
+
+  .erp-label { @apply block text-[13px] font-medium text-[#444441] mb-1.5; }
+
+  .erp-btn-primary {
+    @apply inline-flex items-center gap-1.5 px-[18px] h-[42px] bg-erp-blue text-erp-pale
+           text-sm font-medium rounded-lg cursor-pointer transition-colors border-0
+           hover:bg-erp-navy active:scale-[0.98];
+  }
+
+  .erp-btn-secondary {
+    @apply inline-flex items-center gap-1.5 px-[18px] h-[42px] bg-transparent text-[#444441]
+           text-sm font-medium border border-erp-border rounded-lg cursor-pointer
+           transition-colors hover:bg-erp-card;
+  }
+
+  .erp-badge         { @apply inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium; }
+  .erp-badge-success { @apply bg-[#EAF3DE] text-[#3B6D11]; }
+  .erp-badge-danger  { @apply bg-[#FCEBEB] text-[#A32D2D]; }
+  .erp-badge-warning { @apply bg-[#FAEEDA] text-[#854F0B]; }
+  .erp-badge-info    { @apply bg-[#E6F1FB] text-[#185FA5]; }
+  .erp-badge-neutral { @apply bg-erp-border text-[#444441]; }
+
+  .erp-alert         { @apply flex items-center gap-2 text-[13px] px-3.5 py-2.5 rounded-lg mb-5 border; }
+  .erp-alert-success { @apply bg-[#EAF3DE] border-[#C0DD97] text-[#3B6D11]; }
+  .erp-alert-danger  { @apply bg-[#FCEBEB] border-[#F09595] text-[#A32D2D]; }
+  .erp-alert-warning { @apply bg-[#FAEEDA] border-[#FAC775] text-[#854F0B]; }
+
+  .erp-action-edit {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-md text-[12px] font-medium
+           bg-[#FAEEDA] text-[#854F0B] border border-[#FAC775]
+           hover:bg-[#FAC775] cursor-pointer transition-colors mr-1;
+  }
+  .erp-action-delete {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-md text-[12px] font-medium
+           bg-[#FCEBEB] text-[#A32D2D] border border-[#F09595]
+           hover:bg-[#F7C1C1] cursor-pointer transition-colors;
+  }
+
+  .erp-page          { @apply max-w-[1400px] mx-auto px-8 py-8 w-full flex-1; }
+  .erp-page-title    { @apply text-[22px] font-semibold text-erp-navy mb-1; }
+  .erp-page-subtitle { @apply text-sm text-erp-muted mb-6; }
+  .erp-card          { @apply bg-white rounded-xl border border-erp-border p-6; }
+
+}
+
+/* Cada componente de feature ocupa la pantalla completa en columna para que el footer quede al fondo */
+app-home, app-almacenes, app-categorias, app-unidades,
+app-productos, app-inventario, app-movimientos, app-usuarios {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flujo CRUD Completo — Ejemplo con Producto</title>
+  <style>
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #334155;
+      --accent: #38bdf8; --green: #4ade80; --yellow: #facc15;
+      --red: #f87171; --orange: #fb923c; --purple: #a78bfa; --pink: #f472b6;
+      --text: #e2e8f0; --muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    .header {
+      background: linear-gradient(135deg, #0a2a0a 0%, #0f172a 100%);
+      padding: 2.5rem 2rem; text-align: center;
+      border-bottom: 3px solid var(--green);
+    }
+    .header h1 { font-size: 2.2rem; color: var(--green); margin-bottom: 0.3rem; }
+    .header p  { color: var(--muted); font-size: 1rem; }
+    .nav-back  { display: inline-block; margin-top: 1rem; color: var(--accent); text-decoration: none; font-size: 0.88rem; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+    .section-title {
+      font-size: 1.35rem; color: var(--green); margin: 3rem 0 1.25rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--surface2);
+    }
+
+    /* Operation tab-like headers */
+    .op-header {
+      display: flex; align-items: center; gap: 1rem; margin: 2.5rem 0 1.25rem;
+      padding: 1rem 1.5rem; border-radius: 10px; border-left: 5px solid;
+      background: var(--surface);
+    }
+    .op-header.get    { border-color: var(--green); }
+    .op-header.post   { border-color: var(--accent); }
+    .op-header.put    { border-color: var(--yellow); }
+    .op-header.delete { border-color: var(--red); }
+    .op-badge {
+      font-weight: bold; font-family: 'Consolas', monospace;
+      padding: 0.3rem 0.9rem; border-radius: 6px; font-size: 0.95rem; flex-shrink: 0;
+    }
+    .op-header.get    .op-badge { background: #064e3b; color: #34d399; }
+    .op-header.post   .op-badge { background: #1e3a5f; color: var(--accent); }
+    .op-header.put    .op-badge { background: #78350f; color: var(--yellow); }
+    .op-header.delete .op-badge { background: #7f1d1d; color: var(--red); }
+    .op-route { font-family: 'Consolas', monospace; font-size: 1rem; color: var(--text); }
+    .op-desc  { color: var(--muted); font-size: 0.88rem; }
+
+    /* Sequence diagram */
+    .sequence {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 0.5rem 1rem;
+      margin: 1rem 0 1.5rem;
+      align-items: start;
+    }
+    .seq-actor {
+      text-align: right; font-size: 0.8rem; font-weight: bold;
+      padding: 0.5rem 0.5rem 0.5rem 0;
+      border-right: 2px solid var(--surface2);
+      line-height: 1.4; min-height: 2.5rem;
+      display: flex; align-items: center; justify-content: flex-end;
+    }
+    .seq-actor.frontend  { color: var(--purple); }
+    .seq-actor.security  { color: var(--red); }
+    .seq-actor.ctrl      { color: var(--accent); }
+    .seq-actor.service   { color: var(--green); }
+    .seq-actor.mapper    { color: var(--orange); }
+    .seq-actor.repo      { color: var(--yellow); }
+    .seq-actor.db        { color: var(--orange); }
+    .seq-actor.response  { color: var(--green); }
+    .seq-content {
+      background: var(--surface); border-radius: 6px; padding: 0.6rem 1rem;
+      font-size: 0.83rem; border-left: 3px solid;
+    }
+    .seq-content.frontend  { border-color: var(--purple); }
+    .seq-content.security  { border-color: var(--red); }
+    .seq-content.ctrl      { border-color: var(--accent); }
+    .seq-content.service   { border-color: var(--green); }
+    .seq-content.mapper    { border-color: var(--orange); }
+    .seq-content.repo      { border-color: var(--yellow); }
+    .seq-content.db        { border-color: var(--orange); }
+    .seq-content.response  { border-color: var(--green); }
+    .seq-content .arrow    { color: var(--muted); font-size: 0.9em; margin-right: 0.3rem; }
+    .seq-content code {
+      font-family: 'Consolas', monospace; background: var(--surface2);
+      padding: 0.05rem 0.35rem; border-radius: 3px; font-size: 0.85em; color: var(--green);
+    }
+
+    /* Code blocks */
+    .code-block {
+      background: #0d1117; border: 1px solid var(--surface2); border-radius: 8px;
+      padding: 1.25rem; font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.83rem; overflow-x: auto; line-height: 1.7; margin: 0.75rem 0;
+    }
+    .c-kw   { color: #f472b6; }
+    .c-cls  { color: #fbbf24; }
+    .c-fn   { color: #60a5fa; }
+    .c-str  { color: #a3e635; }
+    .c-ann  { color: #c084fc; }
+    .c-num  { color: #fb923c; }
+    .c-cm   { color: #6b7280; font-style: italic; }
+    .c-bool { color: #4ade80; }
+
+    /* JSON blocks */
+    .json-block {
+      background: #0d1117; border: 1px solid var(--surface2); border-radius: 8px;
+      padding: 1.25rem; font-family: 'Consolas', monospace; font-size: 0.83rem;
+      overflow-x: auto; line-height: 1.8; margin: 0.75rem 0;
+    }
+    .jk  { color: #38bdf8; }    /* key */
+    .js  { color: #a3e635; }    /* string value */
+    .jn  { color: #fb923c; }    /* number */
+    .jb  { color: #4ade80; }    /* boolean */
+    .jx  { color: #f87171; }    /* false/null */
+    .jc  { color: #6b7280; font-style: italic; }  /* comment */
+
+    /* Two column layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+    @media(max-width:700px) { .two-col { grid-template-columns: 1fr; } }
+
+    .col-label {
+      font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--muted); margin-bottom: 0.4rem; padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--surface2);
+    }
+
+    /* Callouts */
+    .callout {
+      border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; border-left: 4px solid; font-size: 0.88rem;
+    }
+    .callout.info   { background: rgba(56,189,248,0.07);  border-color: var(--accent); color: var(--muted); }
+    .callout.warn   { background: rgba(251,146,60,0.07);  border-color: var(--orange); color: var(--muted); }
+    .callout.danger { background: rgba(248,113,113,0.07); border-color: var(--red);    color: var(--muted); }
+    .callout strong { color: var(--text); }
+    .callout code {
+      font-family: 'Consolas', monospace; background: var(--surface2);
+      padding: 0.05rem 0.4rem; border-radius: 3px; font-size: 0.85em; color: var(--green);
+    }
+
+    /* Entity diagram */
+    .entity-box {
+      background: var(--surface); border-radius: 10px; border: 1px solid var(--surface2);
+      padding: 1.25rem; margin: 1rem 0;
+    }
+    .entity-title { color: var(--yellow); font-weight: bold; font-size: 1rem; margin-bottom: 0.75rem; }
+    .entity-field { display: flex; gap: 1rem; font-size: 0.83rem; border-bottom: 1px solid var(--surface2); padding: 0.35rem 0; }
+    .entity-field:last-child { border-bottom: none; }
+    .ef-col   { color: var(--accent); font-family: monospace; min-width: 160px; }
+    .ef-type  { color: var(--orange); font-family: monospace; min-width: 100px; }
+    .ef-note  { color: var(--muted); font-size: 0.8rem; }
+
+    /* Layer flow */
+    .layer-flow {
+      display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0;
+    }
+    .layer-row {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--surface); border-radius: 8px; padding: 0.75rem 1rem;
+      border-left: 4px solid; font-size: 0.88rem;
+    }
+    .layer-row.l1 { border-color: var(--purple); }
+    .layer-row.l2 { border-color: var(--red); }
+    .layer-row.l3 { border-color: var(--accent); }
+    .layer-row.l4 { border-color: var(--green); }
+    .layer-row.l5 { border-color: var(--yellow); }
+    .layer-row.l6 { border-color: var(--orange); }
+    .lr-layer { font-weight: bold; min-width: 130px; font-size: 0.8rem; }
+    .layer-row.l1 .lr-layer { color: var(--purple); }
+    .layer-row.l2 .lr-layer { color: var(--red); }
+    .layer-row.l3 .lr-layer { color: var(--accent); }
+    .layer-row.l4 .lr-layer { color: var(--green); }
+    .layer-row.l5 .lr-layer { color: var(--yellow); }
+    .layer-row.l6 .lr-layer { color: var(--orange); }
+    .lr-action { color: var(--text); flex: 1; }
+    .lr-file   { color: var(--muted); font-family: monospace; font-size: 0.78rem; }
+
+    code {
+      font-family: 'Consolas', monospace; background: var(--surface2);
+      padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.84em; color: var(--green);
+    }
+
+    /* Error codes */
+    .http-badge {
+      display: inline-block; padding: 0.15rem 0.6rem; border-radius: 4px;
+      font-family: monospace; font-size: 0.82rem; font-weight: bold;
+    }
+    .h-200 { background: #064e3b; color: #34d399; }
+    .h-201 { background: #1e3a5f; color: #60a5fa; }
+    .h-400 { background: #78350f; color: #fbbf24; }
+    .h-401 { background: #7f1d1d; color: var(--red); }
+    .h-404 { background: #7f1d1d; color: var(--red); }
+    .h-422 { background: #5b21b6; color: var(--purple); }
+    .h-500 { background: #1c1c1c; color: #d1d5db; }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted); font-size: 0.85rem;
+      border-top: 1px solid var(--surface2); margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#128230; Flujo CRUD Completo — Producto</h1>
+  <p>Trazabilidad end-to-end: Frontend Angular → Spring Security → Controller → Service → Repository → MySQL</p>
+  <a href="index.html" class="nav-back">&#8592; Volver al índice</a>
+</div>
+
+<div class="container">
+
+  <!-- ========== ENTIDAD PRODUCTO ========== -->
+  <h2 class="section-title">&#128203; La Entidad Producto (Modelo de datos)</h2>
+  <p style="color:var(--muted); margin-bottom:1rem;">
+    Antes de ver las operaciones, entendamos qué es un <code>Producto</code> en este sistema:
+    qué columnas tiene en la DB, qué campos expone la API, y cómo se transforma en cada capa.
+  </p>
+
+  <div class="two-col">
+    <div>
+      <div class="col-label">Tabla MySQL: <code>producto</code></div>
+      <div class="entity-box">
+        <div class="entity-title">Producto.java (@Entity)</div>
+        <div class="entity-field"><span class="ef-col">producto_id</span><span class="ef-type">INT (PK)</span><span class="ef-note">Auto-increment, generado por DB</span></div>
+        <div class="entity-field"><span class="ef-col">sku</span><span class="ef-type">VARCHAR(30)</span><span class="ef-note">UNIQUE — código de producto</span></div>
+        <div class="entity-field"><span class="ef-col">nombre</span><span class="ef-type">VARCHAR(120)</span><span class="ef-note">Nombre descriptivo</span></div>
+        <div class="entity-field"><span class="ef-col">descripcion</span><span class="ef-type">VARCHAR(500)</span><span class="ef-note">Opcional</span></div>
+        <div class="entity-field"><span class="ef-col">codigo_barras</span><span class="ef-type">VARCHAR(50)</span><span class="ef-note">Opcional</span></div>
+        <div class="entity-field"><span class="ef-col">precio_lista</span><span class="ef-type">DECIMAL(18,2)</span><span class="ef-note">Precio unitario</span></div>
+        <div class="entity-field"><span class="ef-col">activo</span><span class="ef-type">TINYINT(1)</span><span class="ef-note">Estado del producto</span></div>
+        <div class="entity-field"><span class="ef-col">creado_en</span><span class="ef-type">DATETIME</span><span class="ef-note">Timestamp de creación</span></div>
+        <div class="entity-field"><span class="ef-col">ultima_actualizacion</span><span class="ef-type">DATETIME</span><span class="ef-note">Timestamp de modificación</span></div>
+        <div class="entity-field"><span class="ef-col">categoria_id</span><span class="ef-type">INT (FK)</span><span class="ef-note">→ tabla Categoria</span></div>
+        <div class="entity-field"><span class="ef-col">unidad_id</span><span class="ef-type">INT (FK)</span><span class="ef-note">→ tabla Unidad (ej: "UNIDAD", "KG")</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="col-label">Transformación por capas (MapStruct)</div>
+      <div class="layer-flow">
+        <div class="layer-row l1">
+          <span class="lr-layer">&#128187; Frontend</span>
+          <span class="lr-action">Envía JSON: <code>ProductoRequestDto</code> (campos editables)</span>
+          <span class="lr-file">Angular</span>
+        </div>
+        <div class="layer-row l2">
+          <span class="lr-layer">&#128274; Security</span>
+          <span class="lr-action">Verifica credenciales, deja pasar</span>
+          <span class="lr-file">SecurityConfig</span>
+        </div>
+        <div class="layer-row l3">
+          <span class="lr-layer">&#128260; Controller</span>
+          <span class="lr-action">Recibe <code>@RequestBody ProductoRequestDto</code></span>
+          <span class="lr-file">ProductoRestController</span>
+        </div>
+        <div class="layer-row l4">
+          <span class="lr-layer">&#9881; Service</span>
+          <span class="lr-action">Valida reglas de negocio (SKU único, etc.)</span>
+          <span class="lr-file">ProductoServiceImpl</span>
+        </div>
+        <div class="layer-row l4">
+          <span class="lr-layer">&#128279; Mapper</span>
+          <span class="lr-action"><code>RequestDto → Entity</code> (vía MapStruct)</span>
+          <span class="lr-file">ProductoMapper</span>
+        </div>
+        <div class="layer-row l5">
+          <span class="lr-layer">&#128203; Repository</span>
+          <span class="lr-action"><code>productoRepo.save(entity)</code> → SQL INSERT/UPDATE</span>
+          <span class="lr-file">ProductoRepository</span>
+        </div>
+        <div class="layer-row l6">
+          <span class="lr-layer">&#128190; MySQL</span>
+          <span class="lr-action">Persiste en tabla <code>producto</code></span>
+          <span class="lr-file">erp_productos</span>
+        </div>
+        <div class="layer-row l4">
+          <span class="lr-layer">&#128279; Mapper</span>
+          <span class="lr-action"><code>Entity → ResponseDto</code> (oculta campos internos)</span>
+          <span class="lr-file">ProductoMapper</span>
+        </div>
+        <div class="layer-row l1">
+          <span class="lr-layer">&#128187; Frontend</span>
+          <span class="lr-action">Recibe JSON: <code>ProductoResponseDto</code> (solo campos seguros)</span>
+          <span class="lr-file">Angular</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== GET LISTAR ========== -->
+  <div class="op-header get">
+    <span class="op-badge">GET</span>
+    <div>
+      <div class="op-route">/api/productos</div>
+      <div class="op-desc">Obtener la lista completa de productos</div>
+    </div>
+  </div>
+
+  <div class="sequence">
+    <div class="seq-actor frontend">Frontend<br>Angular</div>
+    <div class="seq-content frontend">
+      <span class="arrow">&#128228;</span>
+      Envía <code>GET /api/productos</code> con header <code>Authorization: Basic YWRtaW46YWRtaW4=</code>
+    </div>
+
+    <div class="seq-actor security">Spring<br>Security</div>
+    <div class="seq-content security">
+      <span class="arrow">&#128274;</span>
+      BasicAuthFilter decodifica → "admin:admin"<br>
+      UserDetailsServiceImpl: <code>SELECT * FROM Usuario WHERE usuario='admin'</code><br>
+      BCrypt verifica contraseña → OK → SecurityContext poblado
+    </div>
+
+    <div class="seq-actor ctrl">Controller<br>listar()</div>
+    <div class="seq-content ctrl">
+      <span class="arrow">&#128260;</span>
+      <code>ProductoRestController.listar()</code> recibe la petición ya autenticada<br>
+      Delega en: <code>productoService.listar()</code>
+    </div>
+
+    <div class="seq-actor service">Service<br>listar()</div>
+    <div class="seq-content service">
+      <span class="arrow">&#9881;</span>
+      <code>@Transactional(readOnly = true)</code> abre transacción<br>
+      Llama a <code>productoRepo.findAll()</code>
+    </div>
+
+    <div class="seq-actor repo">Repository<br>SQL</div>
+    <div class="seq-content repo">
+      <span class="arrow">&#128203;</span>
+      <code>SELECT * FROM producto</code><br>
+      Devuelve <code>List&lt;Producto&gt;</code> (entities JPA)
+    </div>
+
+    <div class="seq-actor service">Mapper<br>toResponse</div>
+    <div class="seq-content service">
+      <span class="arrow">&#128279;</span>
+      <code>.stream().map(mapper::toResponseDto)</code><br>
+      Cada <code>Producto</code> entity → <code>ProductoResponseDto</code>
+    </div>
+
+    <div class="seq-actor ctrl">Controller<br>envelope</div>
+    <div class="seq-content ctrl">
+      <span class="arrow">&#128233;</span>
+      Construye envelope: <code>{success, message, data, total}</code><br>
+      Retorna <code>ResponseEntity.ok(response)</code> → HTTP 200
+    </div>
+
+    <div class="seq-actor frontend">Frontend<br>Angular</div>
+    <div class="seq-content frontend">
+      <span class="arrow">&#128229;</span>
+      Recibe JSON con la lista de productos → renderiza la tabla
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="col-label">Request</div>
+      <div class="json-block">
+GET /api/productos HTTP/1.1
+Authorization: Basic <span class="js">YWRtaW46YWRtaW4=</span>
+Accept: application/json
+      </div>
+    </div>
+    <div>
+      <div class="col-label">Response — <span class="http-badge h-200">200 OK</span></div>
+      <div class="json-block">
+{
+  <span class="jk">"success"</span>: <span class="jb">true</span>,
+  <span class="jk">"message"</span>: <span class="js">"Productos listados correctamente"</span>,
+  <span class="jk">"data"</span>: [
+    {
+      <span class="jk">"id"</span>: <span class="jn">1</span>,
+      <span class="jk">"sku"</span>: <span class="js">"PRD-001"</span>,
+      <span class="jk">"nombre"</span>: <span class="js">"Arroz Extra"</span>,
+      <span class="jk">"descripcion"</span>: <span class="js">"Arroz de grano largo"</span>,
+      <span class="jk">"precioLista"</span>: <span class="jn">3.50</span>,
+      <span class="jk">"activo"</span>: <span class="jb">true</span>,
+      <span class="jk">"categoriaId"</span>: <span class="jn">2</span>,
+      <span class="jk">"unidadId"</span>: <span class="jn">1</span>
+    }
+  ],
+  <span class="jk">"total"</span>: <span class="jn">1</span>
+}
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== POST CREAR ========== -->
+  <div class="op-header post">
+    <span class="op-badge">POST</span>
+    <div>
+      <div class="op-route">/api/productos</div>
+      <div class="op-desc">Crear un nuevo producto — con validaciones de negocio</div>
+    </div>
+  </div>
+
+  <div class="sequence">
+    <div class="seq-actor frontend">Frontend<br>Angular</div>
+    <div class="seq-content frontend">
+      <span class="arrow">&#128228;</span>
+      Envía <code>POST /api/productos</code> con JSON del nuevo producto en el body<br>
+      Header: <code>Authorization: Basic ...</code> + <code>Content-Type: application/json</code>
+    </div>
+
+    <div class="seq-actor security">Spring<br>Security</div>
+    <div class="seq-content security">
+      <span class="arrow">&#128274;</span>
+      Verifica credenciales (mismo flujo del diagrama Spring Security)<br>
+      Si OK → continúa. Si NO → devuelve <code>401 Unauthorized</code>
+    </div>
+
+    <div class="seq-actor ctrl">Controller<br>crear()</div>
+    <div class="seq-content ctrl">
+      <span class="arrow">&#128260;</span>
+      <code>@Validated @RequestBody ProductoRequestDto request</code><br>
+      Bean Validation valida campos (@NotBlank, @Size, etc.)<br>
+      Si validación falla → 400 Bad Request antes de llegar al service
+    </div>
+
+    <div class="seq-actor service">Service<br>crear()</div>
+    <div class="seq-content service">
+      <span class="arrow">&#9881;</span>
+      Normaliza SKU: <code>.trim().toUpperCase()</code><br>
+      Verifica SKU único: <code>productoRepo.findBySku(sku)</code><br>
+      Si SKU existe → lanza <code>BusinessException</code> → 400<br>
+      Verifica que categoriaId existe: <code>categoriaRepo.existsById()</code><br>
+      Verifica que unidadId existe: <code>unidadRepo.existsById()</code>
+    </div>
+
+    <div class="seq-actor mapper">Mapper<br>toEntity</div>
+    <div class="seq-content mapper">
+      <span class="arrow">&#128279;</span>
+      <code>mapper.toEntity(request)</code> — MapStruct convierte<br>
+      <code>ProductoRequestDto → Producto</code> (entity JPA)<br>
+      Asigna <code>creadoEn = LocalDateTime.now()</code>
+    </div>
+
+    <div class="seq-actor repo">Repository<br>save()</div>
+    <div class="seq-content repo">
+      <span class="arrow">&#128203;</span>
+      <code>productoRepo.save(entity)</code><br>
+      JPA ejecuta: <code>INSERT INTO producto (...) VALUES (...)</code><br>
+      MySQL genera <code>producto_id</code> auto-increment → regresa entity con ID
+    </div>
+
+    <div class="seq-actor mapper">Mapper<br>toResponse</div>
+    <div class="seq-content mapper">
+      <span class="arrow">&#128279;</span>
+      <code>mapper.toResponseDto(saved)</code><br>
+      <code>Producto entity → ProductoResponseDto</code>
+    </div>
+
+    <div class="seq-actor ctrl">Controller<br>envelope</div>
+    <div class="seq-content ctrl">
+      <span class="arrow">&#128233;</span>
+      Construye envelope con el producto creado<br>
+      Retorna <code>ResponseEntity.status(CREATED).body(response)</code> → HTTP <strong>201</strong>
+    </div>
+
+    <div class="seq-actor frontend">Frontend<br>Angular</div>
+    <div class="seq-content frontend">
+      <span class="arrow">&#128229;</span>
+      Recibe JSON con el producto recién creado (incluyendo su nuevo <code>id</code>)
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="col-label">Request Body (JSON)</div>
+      <div class="json-block">
+POST /api/productos HTTP/1.1
+Authorization: Basic <span class="js">YWRtaW46YWRtaW4=</span>
+Content-Type: application/json
+
+{
+  <span class="jk">"sku"</span>:         <span class="js">"PRD-001"</span>,
+  <span class="jk">"nombre"</span>:      <span class="js">"Arroz Extra"</span>,
+  <span class="jk">"descripcion"</span>: <span class="js">"Arroz de grano largo"</span>,
+  <span class="jk">"codigoBarras"</span>:<span class="js">"7501234567890"</span>,
+  <span class="jk">"precioLista"</span>: <span class="jn">3.50</span>,
+  <span class="jk">"activo"</span>:      <span class="jb">true</span>,
+  <span class="jk">"categoriaId"</span>: <span class="jn">2</span>,
+  <span class="jk">"unidadId"</span>:    <span class="jn">1</span>
+}
+      </div>
+    </div>
+    <div>
+      <div class="col-label">Response — <span class="http-badge h-201">201 Created</span></div>
+      <div class="json-block">
+{
+  <span class="jk">"success"</span>:  <span class="jb">true</span>,
+  <span class="jk">"message"</span>:  <span class="js">"Producto creado exitosamente"</span>,
+  <span class="jk">"data"</span>: {
+    <span class="jk">"id"</span>:           <span class="jn">1</span>,       <span class="jc">← asignado por MySQL</span>
+    <span class="jk">"sku"</span>:          <span class="js">"PRD-001"</span>, <span class="jc">← normalizado a mayúsculas</span>
+    <span class="jk">"nombre"</span>:       <span class="js">"Arroz Extra"</span>,
+    <span class="jk">"descripcion"</span>:  <span class="js">"Arroz de grano largo"</span>,
+    <span class="jk">"codigoBarras"</span>: <span class="js">"7501234567890"</span>,
+    <span class="jk">"precioLista"</span>:  <span class="jn">3.50</span>,
+    <span class="jk">"activo"</span>:       <span class="jb">true</span>,
+    <span class="jk">"categoriaId"</span>:  <span class="jn">2</span>,
+    <span class="jk">"unidadId"</span>:     <span class="jn">1</span>,
+    <span class="jk">"creadoEn"</span>:     <span class="js">"2024-01-15T10:30:00"</span>
+  }
+}
+      </div>
+    </div>
+  </div>
+
+  <!-- Validaciones del service -->
+  <div class="callout info">
+    <strong>Validaciones en ProductoServiceImpl.crear():</strong><br>
+    1. <code>sku.trim().toUpperCase()</code> — normaliza el SKU antes de guardarlo<br>
+    2. <code>productoRepo.findBySku(sku)</code> — si ya existe, lanza <code>BusinessException</code> → 400<br>
+    3. <code>categoriaRepo.existsById(categoriaId)</code> — si no existe, lanza <code>NotFoundException</code> → 404<br>
+    4. <code>unidadRepo.existsById(unidadId)</code> — si no existe, lanza <code>NotFoundException</code> → 404
+  </div>
+
+  <!-- ========== GET POR ID ========== -->
+  <div class="op-header get">
+    <span class="op-badge">GET</span>
+    <div>
+      <div class="op-route">/api/productos/{id}</div>
+      <div class="op-desc">Obtener un producto específico por su ID</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="col-label">Flujo en ProductoServiceImpl.obtener()</div>
+      <div class="code-block">
+<span class="c-ann">@Transactional(readOnly = true)</span>
+<span class="c-kw">public</span> <span class="c-cls">ProductoResponseDto</span> <span class="c-fn">obtener</span>(<span class="c-cls">Integer</span> id) {
+
+    <span class="c-cls">Producto</span> producto = productoRepo.<span class="c-fn">findById</span>(id)
+        .<span class="c-fn">orElseThrow</span>(() ->
+            <span class="c-kw">new</span> <span class="c-cls">NotFoundException</span>(
+                <span class="c-str">"Producto no encontrado: "</span> + id
+            )
+        );
+    <span class="c-cm">// Si id no existe → NotFoundException → GlobalExceptionHandler → 404</span>
+
+    <span class="c-kw">return</span> mapper.<span class="c-fn">toResponseDto</span>(producto);
+}
+
+<span class="c-cm">// SQL ejecutado:</span>
+<span class="c-cm">// SELECT * FROM producto WHERE producto_id = ? LIMIT 1</span>
+      </div>
+    </div>
+    <div>
+      <div>
+        <div class="col-label">Response exitosa — <span class="http-badge h-200">200 OK</span></div>
+        <div class="json-block">
+{
+  <span class="jk">"success"</span>: <span class="jb">true</span>,
+  <span class="jk">"message"</span>: <span class="js">"Producto encontrado"</span>,
+  <span class="jk">"data"</span>: {
+    <span class="jk">"id"</span>: <span class="jn">1</span>,
+    <span class="jk">"sku"</span>: <span class="js">"PRD-001"</span>,
+    <span class="jk">"nombre"</span>: <span class="js">"Arroz Extra"</span>,
+    <span class="jk">"precioLista"</span>: <span class="jn">3.50</span>,
+    <span class="jk">"activo"</span>: <span class="jb">true</span>
+  }
+}
+        </div>
+      </div>
+      <div>
+        <div class="col-label">Si el producto no existe — <span class="http-badge h-404">404 Not Found</span></div>
+        <div class="json-block">
+{
+  <span class="jk">"success"</span>: <span class="jx">false</span>,
+  <span class="jk">"message"</span>: <span class="js">"Producto no encontrado: 99"</span>,
+  <span class="jk">"timestamp"</span>: <span class="js">"2024-01-15T10:30:00"</span>
+}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PUT ACTUALIZAR ========== -->
+  <div class="op-header put">
+    <span class="op-badge">PUT</span>
+    <div>
+      <div class="op-route">/api/productos/{id}</div>
+      <div class="op-desc">Actualizar un producto existente</div>
+    </div>
+  </div>
+
+  <div class="sequence">
+    <div class="seq-actor frontend">Frontend</div>
+    <div class="seq-content frontend">
+      <span class="arrow">&#128228;</span>
+      <code>PUT /api/productos/1</code> con el body JSON de los campos a actualizar
+    </div>
+
+    <div class="seq-actor security">Security</div>
+    <div class="seq-content security">
+      <span class="arrow">&#128274;</span>
+      Verifica credenciales → OK
+    </div>
+
+    <div class="seq-actor ctrl">Controller<br>actualizar()</div>
+    <div class="seq-content ctrl">
+      <span class="arrow">&#128260;</span>
+      Recibe <code>@PathVariable Integer id</code> y <code>@RequestBody ProductoRequestDto request</code><br>
+      Delega en <code>productoService.actualizar(id, request)</code>
+    </div>
+
+    <div class="seq-actor service">Service<br>actualizar()</div>
+    <div class="seq-content service">
+      <span class="arrow">&#9881;</span>
+      <code>productoRepo.findById(id)</code> — si no existe → 404<br>
+      Si cambia el SKU: verifica unicidad con <code>existsBySkuAndIdNot(nuevoSku, id)</code><br>
+      <code>mapper.updateEntityFromDto(request, actual)</code> — actualización parcial (MapStruct ignora nulos)<br>
+      <code>productoRepo.save(actual)</code> → SQL UPDATE
+    </div>
+
+    <div class="seq-actor repo">Repository<br>save()</div>
+    <div class="seq-content repo">
+      <span class="arrow">&#128203;</span>
+      <code>UPDATE producto SET nombre=?, precio_lista=?, ... WHERE producto_id=1</code>
+    </div>
+
+    <div class="seq-actor frontend">Frontend</div>
+    <div class="seq-content frontend">
+      <span class="arrow">&#128229;</span>
+      Recibe el producto actualizado con todos sus campos
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="col-label">Request Body (solo campos a cambiar)</div>
+      <div class="json-block">
+PUT /api/productos/1 HTTP/1.1
+Authorization: Basic <span class="js">YWRtaW46YWRtaW4=</span>
+Content-Type: application/json
+
+{
+  <span class="jk">"nombre"</span>:      <span class="js">"Arroz Extra Premium"</span>,
+  <span class="jk">"precioLista"</span>: <span class="jn">4.00</span>
+}
+      </div>
+    </div>
+    <div>
+      <div class="col-label">Response — <span class="http-badge h-200">200 OK</span></div>
+      <div class="json-block">
+{
+  <span class="jk">"success"</span>: <span class="jb">true</span>,
+  <span class="jk">"message"</span>: <span class="js">"Producto actualizado exitosamente"</span>,
+  <span class="jk">"data"</span>: {
+    <span class="jk">"id"</span>:          <span class="jn">1</span>,
+    <span class="jk">"sku"</span>:         <span class="js">"PRD-001"</span>,
+    <span class="jk">"nombre"</span>:      <span class="js">"Arroz Extra Premium"</span>,
+    <span class="jk">"precioLista"</span>: <span class="jn">4.00</span>,   <span class="jc">← actualizado</span>
+    <span class="jk">"activo"</span>:      <span class="jb">true</span>
+  }
+}
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DELETE ELIMINAR ========== -->
+  <div class="op-header delete">
+    <span class="op-badge">DELETE</span>
+    <div>
+      <div class="op-route">/api/productos/{id}</div>
+      <div class="op-desc">Eliminar un producto por su ID</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="col-label">Flujo en ProductoServiceImpl.eliminar()</div>
+      <div class="code-block">
+<span class="c-kw">public void</span> <span class="c-fn">eliminar</span>(<span class="c-cls">Integer</span> id) {
+
+    <span class="c-cm">// 1. Verificar que existe</span>
+    <span class="c-cls">Producto</span> producto = productoRepo.<span class="c-fn">findById</span>(id)
+        .<span class="c-fn">orElseThrow</span>(() ->
+            <span class="c-kw">new</span> <span class="c-cls">NotFoundException</span>(
+                <span class="c-str">"Producto no encontrado: "</span> + id
+            )
+        );
+
+    <span class="c-cm">// 2. Eliminar de la DB</span>
+    productoRepo.<span class="c-fn">delete</span>(producto);
+    <span class="c-cm">// SQL: DELETE FROM producto WHERE producto_id = ?</span>
+
+    <span class="c-cm">// Si tiene inventario/movimientos asociados:</span>
+    <span class="c-cm">// MySQL lanzará un error de FK → INTERNAL_SERVER_ERROR (500)</span>
+}
+      </div>
+    </div>
+    <div>
+      <div>
+        <div class="col-label">Response exitosa — <span class="http-badge h-200">200 OK</span></div>
+        <div class="json-block">
+DELETE /api/productos/1
+
+{
+  <span class="jk">"success"</span>: <span class="jb">true</span>,
+  <span class="jk">"message"</span>: <span class="js">"Producto eliminado exitosamente"</span>
+}
+        </div>
+      </div>
+      <div>
+        <div class="col-label">Si el producto no existe — <span class="http-badge h-404">404</span></div>
+        <div class="json-block">
+{
+  <span class="jk">"success"</span>: <span class="jx">false</span>,
+  <span class="jk">"message"</span>: <span class="js">"Producto no encontrado: 1"</span>,
+  <span class="jk">"timestamp"</span>: <span class="js">"2024-01-15T10:30:00"</span>
+}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MANEJO DE ERRORES ========== -->
+  <h2 class="section-title">&#9888; GlobalExceptionHandler — Manejo centralizado de errores</h2>
+  <p style="color:var(--muted); margin-bottom:1rem;">
+    La clase <code>GlobalExceptionHandler.java</code> (anotada con <code>@RestControllerAdvice</code>)
+    intercepta todas las excepciones lanzadas desde cualquier RestController y las convierte en
+    respuestas JSON consistentes. Sin él, Spring retornaría HTML de error.
+  </p>
+
+  <div class="code-block">
+<span class="c-ann">@RestControllerAdvice</span>
+<span class="c-kw">public class</span> <span class="c-cls">GlobalExceptionHandler</span> {
+
+    <span class="c-cm">// NotFoundException → 404 Not Found</span>
+    <span class="c-cm">// Cuándo se lanza: producto/categoría/unidad no encontrado por ID</span>
+    <span class="c-ann">@ExceptionHandler</span>(<span class="c-cls">NotFoundException</span>.<span class="c-kw">class</span>)
+    <span class="c-cls">ResponseEntity</span>&lt;<span class="c-cls">ErrorResponse</span>&gt; <span class="c-fn">handleNotFound</span>(<span class="c-cls">NotFoundException</span> ex) {
+        <span class="c-kw">return</span> <span class="c-cls">ResponseEntity</span>.<span class="c-fn">status</span>(<span class="c-cls">HttpStatus</span>.NOT_FOUND)
+            .<span class="c-fn">body</span>(<span class="c-cls">ErrorResponse</span>.<span class="c-fn">of</span>(<span class="c-str">"NOT_FOUND"</span>, ex.<span class="c-fn">getMessage</span>()));
+    }
+
+    <span class="c-cm">// BusinessException → 422 Unprocessable Entity</span>
+    <span class="c-cm">// Cuándo se lanza: SKU duplicado, stock insuficiente para SALIDA, etc.</span>
+    <span class="c-ann">@ExceptionHandler</span>(<span class="c-cls">BusinessException</span>.<span class="c-kw">class</span>)
+    <span class="c-cls">ResponseEntity</span>&lt;<span class="c-cls">ErrorResponse</span>&gt; <span class="c-fn">handleBusiness</span>(<span class="c-cls">BusinessException</span> ex) {
+        <span class="c-kw">return</span> <span class="c-cls">ResponseEntity</span>.<span class="c-fn">status</span>(<span class="c-cls">HttpStatus</span>.UNPROCESSABLE_ENTITY)
+            .<span class="c-fn">body</span>(<span class="c-cls">ErrorResponse</span>.<span class="c-fn">of</span>(<span class="c-str">"BUSINESS_RULE"</span>, ex.<span class="c-fn">getMessage</span>()));
+    }
+
+    <span class="c-cm">// Exception genérica → 500 Internal Server Error</span>
+    <span class="c-cm">// Error inesperado: conexión DB perdida, NullPointer no manejado, etc.</span>
+    <span class="c-ann">@ExceptionHandler</span>(<span class="c-cls">Exception</span>.<span class="c-kw">class</span>)
+    <span class="c-cls">ResponseEntity</span>&lt;<span class="c-cls">ErrorResponse</span>&gt; <span class="c-fn">handleGeneric</span>(<span class="c-cls">Exception</span> ex) {
+        <span class="c-kw">return</span> <span class="c-cls">ResponseEntity</span>.<span class="c-fn">status</span>(<span class="c-cls">HttpStatus</span>.INTERNAL_SERVER_ERROR)
+            .<span class="c-fn">body</span>(<span class="c-cls">ErrorResponse</span>.<span class="c-fn">of</span>(<span class="c-str">"INTERNAL_ERROR"</span>, <span class="c-str">"Ocurrió un error inesperado"</span>));
+    }
+}
+  </div>
+
+  <!-- Tabla de códigos HTTP -->
+  <h2 class="section-title">&#128204; Tabla de Códigos HTTP del Sistema</h2>
+  <div style="overflow-x:auto; border-radius:8px; border:1px solid var(--surface2);">
+    <table style="width:100%; border-collapse:collapse;">
+      <tr style="background:var(--surface2);">
+        <th style="padding:.75rem 1rem; color:var(--accent); text-align:left;">Código</th>
+        <th style="padding:.75rem 1rem; color:var(--accent); text-align:left;">Nombre</th>
+        <th style="padding:.75rem 1rem; color:var(--accent); text-align:left;">Cuándo ocurre</th>
+        <th style="padding:.75rem 1rem; color:var(--accent); text-align:left;">Quién lo genera</th>
+      </tr>
+      <tr style="border-bottom:1px solid var(--surface2);">
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-200">200 OK</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Success</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">GET, PUT, DELETE exitoso</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--accent);">RestController</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--surface2);">
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-201">201 Created</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Created</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">POST exitoso (recurso creado)</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--accent);">RestController</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--surface2);">
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-400">400 Bad Request</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Bad Request</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">BusinessException (SKU duplicado, etc.)</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--accent);">Service → Controller</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--surface2);">
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-401">401 Unauthorized</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Unauthorized</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">Sin header Auth o credenciales incorrectas</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--red);">Spring Security</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--surface2);">
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-404">403 Forbidden</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Forbidden</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">Autenticado pero sin rol ADMIN en endpoint restringido</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--red);">Spring Security</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--surface2);">
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-404">404 Not Found</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Not Found</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">NotFoundException (ID no existe en DB)</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--accent);">Service → GlobalExceptionHandler</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--surface2);">
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-422">422 Unprocessable</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Business Rule</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">BusinessException manejada por GlobalExceptionHandler</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--accent);">GlobalExceptionHandler</td>
+      </tr>
+      <tr>
+        <td style="padding:.65rem 1rem;"><span class="http-badge h-500">500 Internal Error</span></td>
+        <td style="padding:.65rem 1rem; color:var(--muted);">Server Error</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem;">Error inesperado (DB caída, NullPointer, etc.)</td>
+        <td style="padding:.65rem 1rem; font-size:.85rem; color:var(--accent);">GlobalExceptionHandler</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ========== RESUMEN ========== -->
+  <h2 class="section-title">&#127775; Resumen: El ciclo completo de una petición</h2>
+
+  <div class="code-block">
+<span class="c-cm">PETICIÓN COMPLETA: POST /api/productos (crear producto nuevo)</span>
+
+Angular (Frontend)
+  │  Authorization: Basic YWRtaW46YWRtaW4=   ← base64("admin:admin")
+  │  Body: { sku, nombre, categoriaId, ... }
+  ▼
+Spring Security — BasicAuthenticationFilter
+  │  Decodifica Base64 → "admin:admin"
+  │  UserDetailsServiceImpl.loadUserByUsername("admin")
+  │    └─ SQL: SELECT * FROM Usuario WHERE usuario='admin'
+  │    └─ new UsuarioPrincipal(usuario)  ← dentro de @Transactional
+  │  BCryptPasswordEncoder.matches("admin", "$2a$10$...") → true
+  │  SecurityContextHolder.setAuthentication(token)
+  ▼
+ProductoRestController.crear(@RequestBody ProductoRequestDto)
+  │  Bean Validation: @NotBlank, @Size, @DecimalMin, etc.
+  │  productoService.crear(request)
+  ▼
+ProductoServiceImpl.crear(request)  ← @Transactional
+  │  sku = request.getSku().trim().toUpperCase()  "prd-001" → "PRD-001"
+  │  productoRepo.findBySku("PRD-001")   → ¿ya existe? Si → BusinessException (400)
+  │  categoriaRepo.existsById(2)         → ¿existe? No → NotFoundException (404)
+  │  unidadRepo.existsById(1)            → ¿existe? No → NotFoundException (404)
+  │  mapper.toEntity(request)            → Producto entity
+  │  entity.setCreadoEn(LocalDateTime.now())
+  │  productoRepo.save(entity)
+  ▼
+MySQL
+  │  INSERT INTO producto (sku, nombre, precio_lista, ...) VALUES ('PRD-001', ...)
+  │  AUTO_INCREMENT asigna producto_id = 1
+  │  Retorna entity con id=1
+  ▼
+ProductoMapper.toResponseDto(saved)
+  │  Producto entity → ProductoResponseDto
+  ▼
+ProductoRestController
+  │  { success:true, message:"...", data: { id:1, sku:"PRD-001", ... } }
+  │  ResponseEntity.status(201 CREATED).body(response)
+  ▼
+Angular (Frontend)
+  │  Recibe { success: true, data: { id: 1, sku: "PRD-001", ... } }
+  │  Actualiza la tabla de productos en pantalla
+  </div>
+
+</div>
+
+<footer>
+  <a href="index.html" style="color:var(--accent); text-decoration:none;">&#8592; Índice</a>
+  &nbsp;·&nbsp;
+  <a href="spring-security-diagrama.html" style="color:var(--accent); text-decoration:none;">&#128274; Spring Security</a>
+  <br><br>
+  Sistema de Gestión de Inventario &nbsp;·&nbsp; Distribuidora Andina SAC
+</footer>
+
+</body>
+</html>

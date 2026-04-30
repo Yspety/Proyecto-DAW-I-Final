@@ -1,0 +1,119 @@
+<app-navbar />
+
+<main class="erp-page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div>
+      <h1 class="erp-page-title">Unidades de Medida</h1>
+      <p class="erp-page-subtitle">Gestión de unidades y factores de conversión</p>
+    </div>
+    <button (click)="abrirNuevo()" class="erp-btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva Unidad
+    </button>
+  </div>
+
+  @if (alerta()) {
+    <div [class]="alerta()!.tipo === 'ok'
+      ? 'flex items-center justify-between gap-2 bg-[#EAF6EE] border border-[#82C99A] text-[#1A5C2E] rounded-lg px-4 py-3 mb-4 text-[13px]'
+      : 'flex items-center justify-between gap-2 bg-[#FCEBEB] border border-[#F09595] text-[#A32D2D] rounded-lg px-4 py-3 mb-4 text-[13px]'">
+      <span>{{ alerta()!.msg }}</span>
+      <button (click)="alerta.set(null)" class="text-current opacity-50 hover:opacity-100 border-none bg-transparent cursor-pointer text-xl leading-none shrink-0">&times;</button>
+    </div>
+  }
+
+  <div class="erp-card">
+    <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
+      <div class="relative max-w-[360px] w-full">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#B4B2A9]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input [(ngModel)]="searchTerm" (input)="filtrar()" class="erp-input pl-9 pr-9 text-[13px]" placeholder="Buscar unidad...">
+        @if (searchTerm) {
+          <button (click)="searchTerm=''; filtrar()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#B4B2A9] hover:text-[#2C2C2A] border-none bg-transparent cursor-pointer text-base leading-none">&times;</button>
+        }
+      </div>
+      <span class="text-[13px] text-[#888780] whitespace-nowrap">Total: <strong class="text-[#1B2A4A]">{{ filtrados.length }}</strong></span>
+    </div>
+
+    <div class="overflow-x-auto rounded-lg border border-[#D3D1C7]">
+      <table class="w-full text-[13px] border-collapse">
+        <thead class="bg-[#F5F7FA]">
+          <tr>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7] w-12">ID</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Código</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Nombre</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Factor Base</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Unidad Base</th>
+            <th class="text-center px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr><td colspan="6" class="text-center text-[#B4B2A9] p-8 text-[13px]">Cargando...</td></tr>
+          }
+          @for (u of filtrados; track u.id) {
+            <tr class="hover:bg-[#F5F7FA] border-b border-[#EEF2F8] last:border-0">
+              <td class="px-3.5 py-2.5 text-[12px] text-[#B4B2A9]">{{ u.id }}</td>
+              <td class="px-3.5 py-2.5 font-medium text-[#2D4A8A] font-mono text-[12px]">{{ u.codigo }}</td>
+              <td class="px-3.5 py-2.5 font-medium text-[#2C2C2A]">{{ u.nombre }}</td>
+              <td class="px-3.5 py-2.5 text-[#888780]">{{ u.factorBase }}</td>
+              <td class="px-3.5 py-2.5">
+                @if (u.esBase) {
+                  <span class="erp-badge bg-[#E6F1FB] text-[#2D4A8A]">Sí</span>
+                } @else {
+                  <span class="erp-badge bg-[#F5F7FA] text-[#888780]">No</span>
+                }
+              </td>
+              <td class="px-3.5 py-2.5 text-center whitespace-nowrap">
+                <button (click)="abrirEditar(u)" class="erp-action-edit mr-1">Editar</button>
+                <button (click)="eliminar(u)" class="erp-action-delete">Eliminar</button>
+              </td>
+            </tr>
+          }
+          @empty {
+            @if (!cargando()) {
+              <tr><td colspan="6" class="text-center text-[#B4B2A9] p-8 text-[13px]">No hay unidades registradas</td></tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<app-footer />
+
+@if (modalAbierto()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="cerrarModal()">
+    <div class="bg-white rounded-[14px] border border-[#D3D1C7] w-full max-w-lg overflow-hidden" (click)="$event.stopPropagation()">
+      <div class="bg-[#1B2A4A] px-6 py-5 flex items-center justify-between">
+        <h5 class="text-[#E8EEF8] font-semibold text-base m-0">{{ modoEdicion() ? 'Editar' : 'Nueva' }} Unidad</h5>
+        <button (click)="cerrarModal()" class="text-[#8FA8D0] hover:text-white text-2xl leading-none border-none bg-transparent cursor-pointer">&times;</button>
+      </div>
+      <div class="p-6 flex flex-col gap-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="erp-label">Código <span class="text-red-500">*</span></label>
+            <input type="text" [formControl]="$any(form.get('codigo'))" class="erp-input font-mono" placeholder="Ej. KG">
+          </div>
+          <div>
+            <label class="erp-label">Factor Base <span class="text-red-500">*</span></label>
+            <input type="number" step="0.0001" [formControl]="$any(form.get('factorBase'))" class="erp-input" placeholder="1">
+          </div>
+        </div>
+        <div>
+          <label class="erp-label">Nombre <span class="text-red-500">*</span></label>
+          <input type="text" [formControl]="$any(form.get('nombre'))" class="erp-input" placeholder="Ej. Kilogramo">
+        </div>
+        <div class="flex items-center gap-2.5">
+          <input type="checkbox" id="esBase-u" [formControl]="$any(form.get('esBase'))" class="w-4 h-4 accent-[#2D4A8A]">
+          <label for="esBase-u" class="text-[13px] text-[#444441] cursor-pointer select-none">Es unidad base</label>
+        </div>
+      </div>
+      <div class="bg-[#F5F7FA] border-t border-[#D3D1C7] px-6 py-4 flex justify-end gap-2.5">
+        <button (click)="cerrarModal()" class="erp-btn-secondary">Cancelar</button>
+        <button (click)="guardar()" [disabled]="form.invalid || guardando()" class="erp-btn-primary disabled:opacity-60">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

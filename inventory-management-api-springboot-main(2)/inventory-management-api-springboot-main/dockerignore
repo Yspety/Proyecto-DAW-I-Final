@@ -1,0 +1,26 @@
+# Archivos de build local (Maven genera su propio target dentro del contenedor)
+target/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Logs y temporales
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

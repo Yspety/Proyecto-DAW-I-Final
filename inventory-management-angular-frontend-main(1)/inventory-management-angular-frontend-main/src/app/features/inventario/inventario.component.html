@@ -1,0 +1,176 @@
+<app-navbar />
+
+<main class="erp-page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div>
+      <h1 class="erp-page-title">Inventario</h1>
+      <p class="erp-page-subtitle">Stock por almacén y alertas de nivel</p>
+    </div>
+    <button (click)="abrirNuevo()" class="erp-btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Registro
+    </button>
+  </div>
+
+  <!-- Alertas de stock -->
+  @if (stocksCriticos > 0 || stocksBajos > 0) {
+    <div class="flex gap-3 mb-4 flex-wrap">
+      @if (mostrarCritico() && stocksCriticos > 0) {
+    <div class="w-full flex items-center justify-between bg-[#FCEBEB] border border-[#F09595] text-[#A32D2D] rounded-lg px-4 py-2.5 text-[13px]">
+      <div class="flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><strong>{{ stocksCriticos }}</strong> producto(s) con stock crítico</span>
+      </div>
+      <button (click)="mostrarCritico.set(false)" class="hover:opacity-70 transition-opacity">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  }
+
+  @if (mostrarBajo() && stocksBajos > 0) {
+    <div class="w-full flex items-center justify-between bg-[#FFF8E6] border border-[#FAC775] text-[#854F0B] rounded-lg px-4 py-2.5 text-[13px]">
+      <div class="flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span><strong>{{ stocksBajos }}</strong> producto(s) con stock bajo</span>
+      </div>
+      <button (click)="mostrarBajo.set(false)" class="hover:opacity-70 transition-opacity">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  }
+    </div>
+  }
+
+  @if (alerta()) {
+    <div [class]="alerta()!.tipo === 'ok'
+      ? 'flex items-center justify-between gap-2 bg-[#EAF6EE] border border-[#82C99A] text-[#1A5C2E] rounded-lg px-4 py-3 mb-4 text-[13px]'
+      : 'flex items-center justify-between gap-2 bg-[#FCEBEB] border border-[#F09595] text-[#A32D2D] rounded-lg px-4 py-3 mb-4 text-[13px]'">
+      <span>{{ alerta()!.msg }}</span>
+      <button (click)="alerta.set(null)" class="text-current opacity-50 hover:opacity-100 border-none bg-transparent cursor-pointer text-xl leading-none shrink-0">&times;</button>
+    </div>
+  }
+
+  <div class="erp-card">
+    <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="relative max-w-[320px] w-full">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#B4B2A9]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input [(ngModel)]="searchTerm" (input)="filtrar()" class="erp-input pl-9 text-[13px]" placeholder="Buscar producto o almacén...">
+        </div>
+        <label class="flex items-center gap-2 text-[13px] text-[#444441] cursor-pointer">
+          <input type="checkbox" [(ngModel)]="filtroCritico" (change)="filtrar()" class="w-4 h-4 accent-[#A32D2D]">
+          Solo stock bajo/crítico
+        </label>
+      </div>
+      <span class="text-[13px] text-[#888780] whitespace-nowrap">Total: <strong class="text-[#1B2A4A]">{{ filtrados.length }}</strong></span>
+    </div>
+
+    <div class="overflow-x-auto rounded-lg border border-[#D3D1C7]">
+      <table class="w-full text-[13px] border-collapse">
+        <thead class="bg-[#F5F7FA]">
+          <tr>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Almacén</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Producto</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">SKU</th>
+            <th class="text-right px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Cantidad</th>
+            <th class="text-right px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Stock Mín</th>
+            <th class="text-right px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Stock Máx</th>
+            <th class="text-left px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Nivel</th>
+            <th class="text-center px-3.5 py-2.5 text-[11px] font-medium text-[#888780] uppercase tracking-[0.06em] border-b border-[#D3D1C7]">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr><td colspan="8" class="text-center text-[#B4B2A9] p-8 text-[13px]">Cargando...</td></tr>
+          }
+          @for (i of filtrados; track i.almacenId + '-' + i.productoId) {
+            <tr [class]="i.stockCritico ? 'hover:bg-[#FFF5F5] border-b border-[#EEF2F8] last:border-0 bg-[#FFF5F5]'
+                        : i.bajStock ? 'hover:bg-[#FFFBF0] border-b border-[#EEF2F8] last:border-0 bg-[#FFFBF0]'
+                        : 'hover:bg-[#F5F7FA] border-b border-[#EEF2F8] last:border-0'">
+              <td class="px-3.5 py-2.5 text-[#888780]">{{ i.almacenNombre }}</td>
+              <td class="px-3.5 py-2.5 font-medium text-[#2C2C2A]">{{ i.productoNombre }}</td>
+              <td class="px-3.5 py-2.5 font-mono text-[12px] text-[#2D4A8A]">{{ i.productoSku }}</td>
+              <td class="px-3.5 py-2.5 text-right font-semibold"
+                  [class]="i.stockCritico ? 'text-[#A32D2D]' : i.bajStock ? 'text-[#854F0B]' : 'text-[#2C2C2A]'">
+                {{ i.cantidad }}
+              </td>
+              <td class="px-3.5 py-2.5 text-right text-[#888780]">{{ i.stockMin }}</td>
+              <td class="px-3.5 py-2.5 text-right text-[#888780]">{{ i.stockMax ?? '—' }}</td>
+              <td class="px-3.5 py-2.5">
+                @if (i.stockCritico) {
+                  <span class="erp-badge bg-[#FCEBEB] text-[#A32D2D]">Crítico</span>
+                } @else if (i.bajStock) {
+                  <span class="erp-badge bg-[#FFF8E6] text-[#854F0B]">Bajo</span>
+                } @else {
+                  <span class="erp-badge bg-[#EAF6EE] text-[#1A5C2E]">OK</span>
+                }
+              </td>
+              <td class="px-3.5 py-2.5 text-center whitespace-nowrap">
+                <button (click)="abrirEditar(i)" class="erp-action-edit mr-1">Editar</button>
+                <button (click)="eliminar(i)" class="erp-action-delete">Eliminar</button>
+              </td>
+            </tr>
+          }
+          @empty {
+            @if (!cargando()) {
+              <tr><td colspan="8" class="text-center text-[#B4B2A9] p-8 text-[13px]">No hay registros de inventario</td></tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<app-footer />
+
+@if (modalAbierto()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="cerrarModal()">
+    <div class="bg-white rounded-[14px] border border-[#D3D1C7] w-full max-w-lg overflow-hidden" (click)="$event.stopPropagation()">
+      <div class="bg-[#1B2A4A] px-6 py-5 flex items-center justify-between">
+        <h5 class="text-[#E8EEF8] font-semibold text-base m-0">{{ modoEdicion() ? 'Editar' : 'Nuevo' }} Registro de Inventario</h5>
+        <button (click)="cerrarModal()" class="text-[#8FA8D0] hover:text-white text-2xl leading-none border-none bg-transparent cursor-pointer">&times;</button>
+      </div>
+      <div class="p-6 flex flex-col gap-4">
+        <div>
+          <label class="erp-label">Almacén <span class="text-red-500">*</span></label>
+          <select [formControl]="$any(form.get('almacenId'))" [disabled]="modoEdicion()" class="erp-select">
+            <option [value]="null" disabled>Seleccionar...</option>
+            @for (a of almacenes; track a.id) {
+              <option [value]="a.id">{{ a.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="erp-label">Producto <span class="text-red-500">*</span></label>
+          <select [formControl]="$any(form.get('productoId'))" [disabled]="modoEdicion()" class="erp-select">
+            <option [value]="null" disabled>Seleccionar...</option>
+            @for (p of productos; track p.id) {
+              <option [value]="p.id">{{ p.nombre }} ({{ p.sku }})</option>
+            }
+          </select>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="erp-label">Cantidad <span class="text-red-500">*</span></label>
+            <input type="number" [formControl]="$any(form.get('cantidad'))" class="erp-input" placeholder="0">
+          </div>
+          <div>
+            <label class="erp-label">Stock Mín <span class="text-red-500">*</span></label>
+            <input type="number" step="1" [formControl]="$any(form.get('stockMin'))" class="erp-input" placeholder="0">
+          </div>
+          <div>
+            <label class="erp-label">Stock Máx</label>
+            <input type="number" step="1" [formControl]="$any(form.get('stockMax'))" class="erp-input" placeholder="Opcional">
+          </div>
+        </div>
+      </div>
+      <div class="bg-[#F5F7FA] border-t border-[#D3D1C7] px-6 py-4 flex justify-end gap-2.5">
+        <button (click)="cerrarModal()" class="erp-btn-secondary">Cancelar</button>
+        <button (click)="guardar()" [disabled]="form.invalid || guardando()" class="erp-btn-primary disabled:opacity-60">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

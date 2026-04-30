@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header}"></head>
+
+<body>
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+<link rel="stylesheet" th:href="@{/css/inventario.css}">
+
+<main class="erp-page">
+
+  <!-- Alertas de operación -->
+  <div th:if="${mensaje}" class="erp-alert erp-alert-success" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20 6L9 17l-5-5"/></svg>
+    <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+  <div th:if="${error}" class="erp-alert erp-alert-danger" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Alertas de stock -->
+  <div th:if="${!#lists.isEmpty(lstStockCritico)}" class="erp-alert erp-alert-danger erp-stock-alert" role="alert">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div>
+      <strong>Stock crítico:</strong>
+      <span th:text="${#lists.size(lstStockCritico)}">0</span> producto(s) requieren reposición urgente.
+    </div>
+  </div>
+  <div th:if="${!#lists.isEmpty(lstStockBajo)}" class="erp-alert erp-alert-warning erp-stock-alert" role="alert">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>
+      <strong>Stock bajo:</strong>
+      <span th:text="${#lists.size(lstStockBajo)}">0</span> producto(s) están por debajo del mínimo.
+    </div>
+  </div>
+
+  <!-- Cabecera -->
+  <div class="erp-page-header">
+    <div>
+      <h1 class="erp-page-title">Inventario</h1>
+      <p class="erp-page-subtitle">Control de stock por almacén en tiempo real</p>
+    </div>
+    <button type="button" class="erp-btn-primary" data-bs-toggle="modal" data-bs-target="#modalInventario" onclick="limpiarFormulario()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Inventario
+    </button>
+  </div>
+
+  <!-- Card principal -->
+  <div class="erp-card">
+
+    <!-- Toolbar -->
+    <div class="erp-table-toolbar">
+      <div class="erp-search-wrapper">
+        <svg class="erp-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" class="erp-search-input" placeholder="Buscar por almacén, producto o SKU..." onkeyup="filtrarTabla()">
+        <button class="erp-search-clear" type="button" onclick="document.getElementById('searchInput').value=''; filtrarTabla();">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <span class="erp-record-count">
+        Total: <strong id="totalRegistros" th:text="${#lists.size(lstInventario)}">0</strong>
+      </span>
+    </div>
+
+    <!-- Tabla -->
+    <div class="erp-table-responsive">
+      <table class="erp-table" id="tablaInventario">
+        <thead>
+          <tr>
+            <th>Almacén</th>
+            <th>Producto</th>
+            <th>SKU</th>
+            <th>Cantidad</th>
+            <th>Stock mín</th>
+            <th>Stock máx</th>
+            <th>Estado</th>
+            <th>Última actualización</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${#lists.isEmpty(lstInventario)}">
+            <td colspan="9" class="erp-table-empty">No hay inventario registrado</td>
+          </tr>
+          <tr th:each="inv : ${lstInventario}">
+            <td th:text="${inv.almacenNombre}">Almacén Central</td>
+            <td class="erp-td-name" th:text="${inv.productoNombre}">Agua Mineral 500ml</td>
+            <td>
+              <span class="erp-badge erp-badge-neutral" th:text="${inv.productoSku}">BEB-001</span>
+            </td>
+            <td>
+              <span class="erp-inv-qty"
+                    th:classappend="${inv.stockCritico ? 'erp-inv-qty--critical' : (inv.bajStock ? 'erp-inv-qty--low' : 'erp-inv-qty--ok')}"
+                    th:text="${inv.cantidad}">5</span>
+            </td>
+            <td class="erp-td-date" th:text="${inv.stockMin}">10</td>
+            <td class="erp-td-date" th:text="${inv.stockMax ?: '—'}">100</td>
+            <td>
+              <span th:if="${inv.stockCritico}" class="erp-badge erp-badge-danger">Crítico</span>
+              <span th:if="${inv.bajStock and !inv.stockCritico}" class="erp-badge erp-badge-warning">Bajo</span>
+              <span th:if="${!inv.bajStock and !inv.stockCritico}" class="erp-badge erp-badge-success">Normal</span>
+            </td>
+            <td class="erp-td-date" th:text="${#temporals.format(inv.ultimaActualizacion, 'dd/MM/yyyy HH:mm')}">01/11/2025 10:00</td>
+            <td class="erp-td-actions">
+              <button class="erp-action-btn erp-action-btn--edit btn-editar"
+                      th:data-almacen-id="${inv.almacenId}"
+                      th:data-producto-id="${inv.productoId}"
+                      th:data-cantidad="${inv.cantidad}"
+                      th:data-stock-min="${inv.stockMin}"
+                      th:data-stock-max="${inv.stockMax}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalInventario">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+              </button>
+              <a th:href="@{/inventario/eliminar/{almacenId}/{productoId}(almacenId=${inv.almacenId},productoId=${inv.productoId})}"
+                 class="erp-action-btn erp-action-btn--delete"
+                 onclick="return confirm('¿Está seguro de eliminar este inventario?\n\nProducto: ' + this.closest('tr').children[1].textContent)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                Eliminar
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<!-- Modal Crear/Editar -->
+<div class="modal fade" id="modalInventario" tabindex="-1" aria-labelledby="modalInventarioLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content erp-modal-content">
+
+      <form id="formInventario" th:method="post" th:action="@{/inventario/guardar}">
+
+        <div class="erp-modal-header">
+          <h5 class="erp-modal-title" id="modalInventarioLabel">Nuevo Inventario</h5>
+          <button type="button" class="btn-close erp-modal-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="erp-modal-body">
+          <input type="hidden" id="almacenIdHidden" name="almacenId">
+          <input type="hidden" id="productoIdHidden" name="productoId">
+
+          <div class="erp-field-row">
+            <!-- Almacén -->
+            <div class="erp-field">
+              <label for="almacenId" class="erp-form-label">Almacén <span class="erp-required">*</span></label>
+              <select class="erp-form-control erp-select" id="almacenId" name="almacenId" required>
+                <option value="">Seleccione un almacén...</option>
+                <option th:each="almacen : ${lstAlmacenes}"
+                        th:value="${almacen.id}"
+                        th:text="${almacen.nombre}">Almacén Central</option>
+              </select>
+            </div>
+
+            <!-- Producto -->
+            <div class="erp-field">
+              <label for="productoId" class="erp-form-label">Producto <span class="erp-required">*</span></label>
+              <select class="erp-form-control erp-select" id="productoId" name="productoId" required>
+                <option value="">Seleccione un producto...</option>
+                <option th:each="producto : ${lstProductos}"
+                        th:value="${producto.id}"
+                        th:text="${producto.sku + ' - ' + producto.nombre}">BEB-001 - Agua Mineral</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Cantidad -->
+          <div class="erp-field">
+            <label for="cantidad" class="erp-form-label">Cantidad actual <span class="erp-required">*</span></label>
+            <input type="number" class="erp-form-control" id="cantidad" name="cantidad" step="0.000001" min="0" required placeholder="0">
+            <small class="erp-field-hint">Cantidad actual en stock</small>
+          </div>
+
+          <div class="erp-field-row">
+            <!-- Stock Mínimo -->
+            <div class="erp-field">
+              <label for="stockMin" class="erp-form-label">Stock mínimo <span class="erp-required">*</span></label>
+              <input type="number" class="erp-form-control" id="stockMin" name="stockMin" step="0.000001" min="0" required placeholder="0">
+              <small class="erp-field-hint">Nivel mínimo antes de alerta</small>
+            </div>
+
+            <!-- Stock Máximo -->
+            <div class="erp-field">
+              <label for="stockMax" class="erp-form-label">Stock máximo</label>
+              <input type="number" class="erp-form-control" id="stockMax" name="stockMax" step="0.000001" min="0" placeholder="Opcional">
+              <small class="erp-field-hint">Capacidad máxima del almacén</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="erp-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="erp-btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar Inventario
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+  function filtrarTabla() {
+    const filter = document.getElementById('searchInput').value.toUpperCase();
+    const tr = document.getElementById('tablaInventario').getElementsByTagName('tr');
+    let count = 0;
+    for (let i = 1; i < tr.length; i++) {
+      const tdAlmacen  = tr[i].getElementsByTagName('td')[0];
+      const tdProducto = tr[i].getElementsByTagName('td')[1];
+      const tdSku      = tr[i].getElementsByTagName('td')[2];
+      if (tdAlmacen && tdProducto && tdSku) {
+        const match =
+          tdAlmacen.textContent.toUpperCase().includes(filter) ||
+          tdProducto.textContent.toUpperCase().includes(filter) ||
+          tdSku.textContent.toUpperCase().includes(filter);
+        tr[i].style.display = match ? '' : 'none';
+        if (match) count++;
+      }
+    }
+    document.getElementById('totalRegistros').textContent = count;
+  }
+
+  function limpiarFormulario() {
+    const form = document.getElementById('formInventario');
+    form.setAttribute('action', '/inventario/guardar');
+    document.getElementById('modalInventarioLabel').textContent = 'Nuevo Inventario';
+
+    document.getElementById('almacenIdHidden').value = '';
+    document.getElementById('productoIdHidden').value = '';
+
+    const almacenSelect  = document.getElementById('almacenId');
+    const productoSelect = document.getElementById('productoId');
+
+    almacenSelect.value = '';
+    almacenSelect.disabled = false;
+    almacenSelect.removeAttribute('name');
+
+    productoSelect.value = '';
+    productoSelect.disabled = false;
+    productoSelect.removeAttribute('name');
+
+    document.getElementById('cantidad').value  = '';
+    document.getElementById('stockMin').value  = '';
+    document.getElementById('stockMax').value  = '';
+  }
+
+  document.getElementById('almacenId').addEventListener('change', function () {
+    if (!this.disabled) document.getElementById('almacenIdHidden').value = this.value;
+  });
+
+  document.getElementById('productoId').addEventListener('change', function () {
+    if (!this.disabled) document.getElementById('productoIdHidden').value = this.value;
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-editar').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const almacenId  = this.getAttribute('data-almacen-id');
+        const productoId = this.getAttribute('data-producto-id');
+        const cantidad   = this.getAttribute('data-cantidad');
+        const stockMin   = this.getAttribute('data-stock-min');
+        const stockMax   = this.getAttribute('data-stock-max');
+
+        document.getElementById('formInventario').setAttribute('action', '/inventario/actualizar');
+        document.getElementById('modalInventarioLabel').textContent = 'Editar Inventario';
+
+        document.getElementById('almacenIdHidden').value  = almacenId;
+        document.getElementById('productoIdHidden').value = productoId;
+
+        const almacenSelect  = document.getElementById('almacenId');
+        const productoSelect = document.getElementById('productoId');
+
+        almacenSelect.value = almacenId;
+        almacenSelect.disabled = true;
+        almacenSelect.removeAttribute('name');
+
+        productoSelect.value = productoId;
+        productoSelect.disabled = true;
+        productoSelect.removeAttribute('name');
+
+        document.getElementById('cantidad').value = cantidad;
+        document.getElementById('stockMin').value = stockMin;
+        document.getElementById('stockMax').value = stockMax || '';
+      });
+    });
+
+    setTimeout(function () {
+      document.querySelectorAll('.erp-alert').forEach(function (el) {
+        el.style.transition = 'opacity 0.4s';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 400);
+      });
+    }, 5000);
+  });
+</script>
+
+</body>
+</html>

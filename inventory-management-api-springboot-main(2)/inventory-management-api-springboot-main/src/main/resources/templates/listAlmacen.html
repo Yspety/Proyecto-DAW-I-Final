@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/header :: header"></head>
+
+<body>
+
+<div th:replace="fragments/header :: navbar"></div>
+<link rel="stylesheet" th:href="@{/css/almacenes.css}">
+
+<main class="erp-page">
+
+  <!-- Alertas -->
+  <div th:if="${mensaje}" class="erp-alert erp-alert-success" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20 6L9 17l-5-5"/></svg>
+    <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+  <div th:if="${error}" class="erp-alert erp-alert-danger" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Cabecera de página -->
+  <div class="erp-page-header">
+    <div>
+      <h1 class="erp-page-title">Almacenes</h1>
+      <p class="erp-page-subtitle">Gestión y control de almacenes del sistema</p>
+    </div>
+    <button type="button" class="erp-btn-primary" data-bs-toggle="modal" data-bs-target="#modalAlmacen" onclick="limpiarFormulario()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Almacén
+    </button>
+  </div>
+
+  <!-- Card principal -->
+  <div class="erp-card">
+
+    <!-- Barra de búsqueda + contador -->
+    <div class="erp-table-toolbar">
+      <div class="erp-search-wrapper">
+        <svg class="erp-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" class="erp-search-input" placeholder="Buscar por nombre, tipo o dirección..." onkeyup="filtrarTabla()">
+        <button class="erp-search-clear" type="button" onclick="document.getElementById('searchInput').value=''; filtrarTabla();">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <span class="erp-record-count">
+        Total: <strong id="totalRegistros" th:text="${#lists.size(lstAlmacenes)}">0</strong>
+      </span>
+    </div>
+
+    <!-- Tabla -->
+    <div class="erp-table-responsive">
+      <table class="erp-table" id="tablaAlmacenes">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+            <th>Última actualización</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${#lists.isEmpty(lstAlmacenes)}">
+            <td colspan="7" class="erp-table-empty">No hay almacenes registrados</td>
+          </tr>
+          <tr th:each="almacen : ${lstAlmacenes}">
+            <td class="erp-td-id" th:text="${almacen.id}">1</td>
+            <td class="erp-td-name" th:text="${almacen.nombre}">Almacén Central</td>
+            <td>
+              <span th:if="${almacen.tipo == 'PRINCIPAL'}" class="erp-badge erp-badge-info">Principal</span>
+              <span th:if="${almacen.tipo == 'SECUNDARIO'}" class="erp-badge erp-badge-neutral">Secundario</span>
+              <span th:if="${almacen.tipo == 'TEMPORAL'}" class="erp-badge erp-badge-warning">Temporal</span>
+            </td>
+            <td class="erp-td-dir" th:text="${almacen.direccion}">Av. Industrial 123</td>
+            <td>
+              <span th:if="${almacen.activo}" class="erp-badge erp-badge-success">Activo</span>
+              <span th:unless="${almacen.activo}" class="erp-badge erp-badge-danger">Inactivo</span>
+            </td>
+            <td class="erp-td-date" th:text="${#temporals.format(almacen.ultimaActualizacion, 'dd/MM/yyyy HH:mm')}">01/11/2025 10:00</td>
+            <td class="erp-td-actions">
+              <button class="erp-action-btn erp-action-btn--edit btn-editar"
+                      th:data-id="${almacen.id}"
+                      th:data-nombre="${almacen.nombre}"
+                      th:data-tipo="${almacen.tipo}"
+                      th:data-direccion="${almacen.direccion}"
+                      th:data-activo="${almacen.activo}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalAlmacen">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+              </button>
+              <a th:href="@{/almacenes/eliminar/{id}(id=${almacen.id})}"
+                 class="erp-action-btn erp-action-btn--delete"
+                 onclick="return confirm('¿Está seguro de eliminar este almacén?\n\nAlmacén: ' + this.closest('tr').children[1].textContent)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                Eliminar
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<!-- Modal Crear/Editar -->
+<div class="modal fade" id="modalAlmacen" tabindex="-1" aria-labelledby="modalAlmacenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content erp-modal-content">
+
+      <form id="formAlmacen" th:action="@{/almacenes/guardar}" method="post">
+
+        <div class="erp-modal-header">
+          <h5 class="erp-modal-title" id="modalAlmacenLabel">Nuevo Almacén</h5>
+          <button type="button" class="btn-close erp-modal-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="erp-modal-body">
+          <input type="hidden" id="almacenId" name="id">
+
+          <!-- Nombre -->
+          <div class="erp-field">
+            <label for="nombre" class="erp-form-label">Nombre del almacén <span class="erp-required">*</span></label>
+            <input type="text" class="erp-form-control" id="nombre" name="nombre" required maxlength="80" placeholder="Ej: Almacén Central">
+          </div>
+
+          <div class="erp-field-row">
+            <!-- Tipo -->
+            <div class="erp-field">
+              <label for="tipo" class="erp-form-label">Tipo <span class="erp-required">*</span></label>
+              <select class="erp-form-control erp-select" id="tipo" name="tipo" required>
+                <option value="">Seleccione un tipo...</option>
+                <option value="PRINCIPAL">Principal</option>
+                <option value="SECUNDARIO">Secundario</option>
+                <option value="TEMPORAL">Temporal</option>
+              </select>
+              <small class="erp-field-hint">Clasificación del almacén</small>
+            </div>
+
+            <!-- Estado -->
+            <div class="erp-field erp-field--switch">
+              <label class="erp-form-label">Estado</label>
+              <label class="erp-switch-label">
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input erp-switch" type="checkbox" id="activo" name="activo" checked>
+                  <span class="erp-switch-text">Almacén activo</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="erp-field">
+            <label for="direccion" class="erp-form-label">Dirección</label>
+            <textarea class="erp-form-control erp-textarea" id="direccion" name="direccion" rows="2" maxlength="180" placeholder="Ej: Av. Industrial 123, Lima"></textarea>
+            <small class="erp-field-hint">Ubicación física del almacén (opcional)</small>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="erp-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="erp-btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar Almacén
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+  function filtrarTabla() {
+    const filter = document.getElementById('searchInput').value.toUpperCase();
+    const tr = document.getElementById('tablaAlmacenes').getElementsByTagName('tr');
+    let count = 0;
+    for (let i = 1; i < tr.length; i++) {
+      const tdNombre = tr[i].getElementsByTagName('td')[1];
+      const tdTipo   = tr[i].getElementsByTagName('td')[2];
+      const tdDir    = tr[i].getElementsByTagName('td')[3];
+      if (tdNombre && tdTipo && tdDir) {
+        const match =
+          tdNombre.textContent.toUpperCase().includes(filter) ||
+          tdTipo.textContent.toUpperCase().includes(filter) ||
+          tdDir.textContent.toUpperCase().includes(filter);
+        tr[i].style.display = match ? '' : 'none';
+        if (match) count++;
+      }
+    }
+    document.getElementById('totalRegistros').textContent = count;
+  }
+
+  function limpiarFormulario() {
+    document.getElementById('formAlmacen').action = '/almacenes/guardar';
+    document.getElementById('modalAlmacenLabel').textContent = 'Nuevo Almacén';
+    document.getElementById('almacenId').value = '';
+    document.getElementById('nombre').value = '';
+    document.getElementById('tipo').value = '';
+    document.getElementById('direccion').value = '';
+    document.getElementById('activo').checked = true;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-editar').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id       = this.getAttribute('data-id');
+        const nombre   = this.getAttribute('data-nombre');
+        const tipo     = this.getAttribute('data-tipo');
+        const direccion = this.getAttribute('data-direccion');
+        const activo   = this.getAttribute('data-activo') === 'true';
+
+        document.getElementById('formAlmacen').action = '/almacenes/actualizar?id=' + id;
+        document.getElementById('modalAlmacenLabel').textContent = 'Editar Almacén';
+        document.getElementById('almacenId').value = id;
+        document.getElementById('nombre').value = nombre;
+        document.getElementById('tipo').value = tipo;
+        document.getElementById('direccion').value = direccion || '';
+        document.getElementById('activo').checked = activo;
+      });
+    });
+
+    setTimeout(function () {
+      document.querySelectorAll('.erp-alert').forEach(function (el) {
+        el.style.transition = 'opacity 0.4s';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 400);
+      });
+    }, 5000);
+  });
+</script>
+
+</body>
+</html>

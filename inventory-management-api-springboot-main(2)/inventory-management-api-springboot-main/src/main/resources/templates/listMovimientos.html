@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header}"></head>
+
+<body>
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+<link rel="stylesheet" th:href="@{/css/movimientos.css}">
+
+<main class="erp-page">
+
+  <!-- Alertas de operación -->
+  <div th:if="${mensaje}" class="erp-alert erp-alert-success" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20 6L9 17l-5-5"/></svg>
+    <span th:text="${mensaje}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+  <div th:if="${error}" class="erp-alert erp-alert-danger" role="alert">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Cabecera -->
+  <div class="erp-page-header">
+    <div>
+      <h1 class="erp-page-title">Movimientos</h1>
+      <p class="erp-page-subtitle">Registro de entradas, salidas y ajustes de inventario</p>
+    </div>
+    <button type="button" class="erp-btn-primary" data-bs-toggle="modal" data-bs-target="#modalMovimiento" onclick="limpiarFormulario()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Movimiento
+    </button>
+  </div>
+
+  <!-- Card principal -->
+  <div class="erp-card">
+
+    <!-- Filtros de tipo + fechas -->
+    <div class="mov-filters">
+      <div class="mov-type-pills">
+        <a th:href="@{/movimientos}" class="mov-pill mov-pill--all">Todos</a>
+        <a th:href="@{/movimientos/tipo/ENTRADA}" class="mov-pill mov-pill--entrada">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          Entradas
+        </a>
+        <a th:href="@{/movimientos/tipo/SALIDA}" class="mov-pill mov-pill--salida">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+          Salidas
+        </a>
+        <a th:href="@{/movimientos/tipo/AJUSTE}" class="mov-pill mov-pill--ajuste">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Ajustes
+        </a>
+      </div>
+
+      <form th:action="@{/movimientos/filtrar-fechas}" method="get" class="mov-date-filter">
+        <input type="date" name="fechaInicio" class="erp-form-control mov-date-input" th:value="${fechaInicio}" required>
+        <span class="mov-date-sep">—</span>
+        <input type="date" name="fechaFin" class="erp-form-control mov-date-input" th:value="${fechaFin}" required>
+        <button type="submit" class="erp-btn-secondary mov-date-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Filtrar
+        </button>
+      </form>
+    </div>
+
+    <!-- Toolbar búsqueda + contador -->
+    <div class="erp-table-toolbar">
+      <div class="erp-search-wrapper">
+        <svg class="erp-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" class="erp-search-input" placeholder="Buscar por producto, almacén, referencia o usuario..." onkeyup="filtrarTabla()">
+        <button class="erp-search-clear" type="button" onclick="document.getElementById('searchInput').value=''; filtrarTabla();">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <span class="erp-record-count">Total: <strong id="totalRegistros" th:text="${#lists.size(lstMovimientos)}">0</strong></span>
+    </div>
+
+    <!-- Tabla -->
+    <div class="erp-table-responsive">
+      <table class="erp-table" id="tablaMovimientos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Almacén</th>
+            <th>Producto</th>
+            <th>SKU</th>
+            <th>Tipo</th>
+            <th class="text-end">Cantidad</th>
+            <th class="text-end">Costo unit.</th>
+            <th class="text-end">Costo total</th>
+            <th>Referencia</th>
+            <th>Usuario</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${#lists.isEmpty(lstMovimientos)}">
+            <td colspan="12" class="erp-table-empty">No hay movimientos registrados</td>
+          </tr>
+          <tr th:each="mov : ${lstMovimientos}">
+            <td class="erp-td-id" th:text="${mov.id}">1</td>
+            <td class="erp-td-date" th:text="${#temporals.format(mov.fechaMovimiento, 'dd/MM/yyyy HH:mm')}">01/11/2025 10:00</td>
+            <td th:text="${mov.almacenNombre}">Almacén Central</td>
+            <td class="erp-td-name" th:text="${mov.productoNombre}">Producto</td>
+            <td><span class="erp-badge erp-badge-neutral" th:text="${mov.productoSku}">SKU-001</span></td>
+            <td>
+              <span th:if="${mov.tipoMovimiento == 'ENTRADA'}" class="erp-badge erp-badge-success mov-badge-tipo">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                Entrada
+              </span>
+              <span th:if="${mov.tipoMovimiento == 'SALIDA'}" class="erp-badge erp-badge-danger mov-badge-tipo">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                Salida
+              </span>
+              <span th:if="${mov.tipoMovimiento == 'AJUSTE'}" class="erp-badge erp-badge-warning mov-badge-tipo">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
+                Ajuste
+              </span>
+            </td>
+            <td class="text-end mov-qty" th:text="${#numbers.formatDecimal(mov.cantidad, 0, 'COMMA', 2, 'POINT')}">100.00</td>
+            <td class="text-end erp-td-date" th:text="${mov.costoUnitario != null ? 'S/ ' + #numbers.formatDecimal(mov.costoUnitario, 0, 'COMMA', 2, 'POINT') : '—'}">—</td>
+            <td class="text-end mov-cost-total" th:text="${mov.costoTotal != null ? 'S/ ' + #numbers.formatDecimal(mov.costoTotal, 0, 'COMMA', 2, 'POINT') : '—'}">—</td>
+            <td class="erp-td-desc" th:text="${mov.referencia ?: '—'}">—</td>
+            <td class="erp-td-date" th:text="${mov.usuario}">Usuario</td>
+            <td class="erp-td-actions">
+              <button class="erp-action-btn erp-action-btn--view btn-ver"
+                      th:data-id="${mov.id}"
+                      th:data-fecha="${#temporals.format(mov.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"
+                      th:data-almacen="${mov.almacenNombre}"
+                      th:data-producto="${mov.productoNombre}"
+                      th:data-sku="${mov.productoSku}"
+                      th:data-tipo="${mov.tipoMovimiento}"
+                      th:data-cantidad="${mov.cantidad}"
+                      th:data-costo="${mov.costoUnitario}"
+                      th:data-referencia="${mov.referencia}"
+                      th:data-usuario="${mov.usuario}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalDetalle">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Ver
+              </button>
+              <a th:href="@{/movimientos/eliminar/{id}(id=${mov.id})}"
+                 class="erp-action-btn erp-action-btn--delete btn-eliminar"
+                 th:data-id="${mov.id}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                Eliminar
+              </a>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot th:if="${!#lists.isEmpty(lstMovimientos)}">
+          <tr class="mov-tfoot">
+            <td colspan="8" class="text-end mov-tfoot-label">Total general:</td>
+            <td class="text-end mov-tfoot-value"
+                th:text="'S/ ' + ${#numbers.formatDecimal(#aggregates.sum(lstMovimientos.![costoTotal != null ? costoTotal : 0]), 0, 'COMMA', 2, 'POINT')}">S/ 0.00</td>
+            <td colspan="3"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<!-- Modal Nuevo Movimiento -->
+<div class="modal fade" id="modalMovimiento" tabindex="-1" aria-labelledby="modalMovimientoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content erp-modal-content">
+
+      <form id="formMovimiento" th:action="@{/movimientos/guardar}" method="post">
+
+        <div class="erp-modal-header">
+          <h5 class="erp-modal-title" id="modalMovimientoLabel">Nuevo Movimiento</h5>
+          <button type="button" class="btn-close erp-modal-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="erp-modal-body">
+          <input type="hidden" id="movimientoId" name="id">
+
+          <div class="erp-field-row">
+            <div class="erp-field">
+              <label for="almacenId" class="erp-form-label">Almacén <span class="erp-required">*</span></label>
+              <select class="erp-form-control erp-select" id="almacenId" name="almacenId" required>
+                <option value="">Seleccione almacén...</option>
+                <option th:each="alm : ${lstAlmacenes}" th:value="${alm.id}" th:text="${alm.nombre}">Almacén</option>
+              </select>
+            </div>
+            <div class="erp-field">
+              <label for="productoId" class="erp-form-label">Producto <span class="erp-required">*</span></label>
+              <select class="erp-form-control erp-select" id="productoId" name="productoId" required>
+                <option value="">Seleccione producto...</option>
+                <option th:each="prod : ${lstProductos}" th:value="${prod.id}" th:text="${prod.sku + ' - ' + prod.nombre}">Producto</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="erp-field-row erp-field-row--3">
+            <div class="erp-field">
+              <label for="tipoMovimiento" class="erp-form-label">Tipo <span class="erp-required">*</span></label>
+              <select class="erp-form-control erp-select" id="tipoMovimiento" name="tipoMovimiento" required>
+                <option value="">Seleccione tipo...</option>
+                <option value="ENTRADA">Entrada</option>
+                <option value="SALIDA">Salida</option>
+                <option value="AJUSTE">Ajuste</option>
+              </select>
+            </div>
+            <div class="erp-field">
+              <label for="cantidad" class="erp-form-label">Cantidad <span class="erp-required">*</span></label>
+              <input type="number" class="erp-form-control" id="cantidad" name="cantidad" required step="0.01" min="0.01" placeholder="0.00">
+            </div>
+            <div class="erp-field">
+              <label for="costoUnitario" class="erp-form-label">Costo unitario</label>
+              <input type="number" class="erp-form-control" id="costoUnitario" name="costoUnitario" step="0.01" min="0" placeholder="0.00">
+              <small class="erp-field-hint">Opcional</small>
+            </div>
+          </div>
+
+          <div class="erp-field">
+            <label for="referencia" class="erp-form-label">Referencia</label>
+            <input type="text" class="erp-form-control" id="referencia" name="referencia" maxlength="100" placeholder="Ej: Compra #123, Venta #456, Ajuste por inventario">
+            <small class="erp-field-hint">Opcional: número de factura, orden, motivo, etc.</small>
+          </div>
+
+          <!-- Info tipos -->
+          <div class="mov-info-box">
+            <div class="mov-info-row">
+              <span class="erp-badge erp-badge-success">Entrada</span>
+              <span>Aumenta el stock — compras, devoluciones de clientes</span>
+            </div>
+            <div class="mov-info-row">
+              <span class="erp-badge erp-badge-danger">Salida</span>
+              <span>Disminuye el stock — ventas, consumos, mermas</span>
+            </div>
+            <div class="mov-info-row">
+              <span class="erp-badge erp-badge-warning">Ajuste</span>
+              <span>Corrección de inventario — puede aumentar o disminuir</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="erp-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="erp-btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Registrar Movimiento
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Detalle -->
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content erp-modal-content">
+
+      <div class="erp-modal-header">
+        <h5 class="erp-modal-title" id="modalDetalleLabel">Detalle del movimiento</h5>
+        <button type="button" class="btn-close erp-modal-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="erp-modal-body" style="padding: 0;">
+        <table class="mov-detail-table">
+          <tr><td class="mov-detail-label">ID</td><td id="detalle-id" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Fecha</td><td id="detalle-fecha" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Almacén</td><td id="detalle-almacen" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Producto</td><td id="detalle-producto" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">SKU</td><td id="detalle-sku" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Tipo</td><td id="detalle-tipo" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Cantidad</td><td id="detalle-cantidad" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Costo unitario</td><td id="detalle-costo" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Referencia</td><td id="detalle-referencia" class="mov-detail-value">—</td></tr>
+          <tr><td class="mov-detail-label">Usuario</td><td id="detalle-usuario" class="mov-detail-value">—</td></tr>
+        </table>
+      </div>
+
+      <div class="erp-modal-footer">
+        <button type="button" class="erp-btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+  function filtrarTabla() {
+    const filter = document.getElementById('searchInput').value.toUpperCase();
+    const tr = document.getElementById('tablaMovimientos').getElementsByTagName('tr');
+    let count = 0;
+    for (let i = 1; i < tr.length - 1; i++) {
+      const tds = tr[i].getElementsByTagName('td');
+      if (tds.length > 0) {
+        const texto = Array.from(tds).map(td => td.textContent).join(' ');
+        const show = texto.toUpperCase().includes(filter);
+        tr[i].style.display = show ? '' : 'none';
+        if (show) count++;
+      }
+    }
+    document.getElementById('totalRegistros').textContent = count;
+  }
+
+  function limpiarFormulario() {
+    document.getElementById('formMovimiento').action = '/movimientos/guardar';
+    document.getElementById('modalMovimientoLabel').textContent = 'Nuevo Movimiento';
+    document.getElementById('movimientoId').value = '';
+    document.getElementById('almacenId').value = '';
+    document.getElementById('productoId').value = '';
+    document.getElementById('tipoMovimiento').value = '';
+    document.getElementById('cantidad').value = '';
+    document.getElementById('costoUnitario').value = '';
+    document.getElementById('referencia').value = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-ver').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.getElementById('detalle-id').textContent        = this.getAttribute('data-id');
+        document.getElementById('detalle-fecha').textContent     = this.getAttribute('data-fecha');
+        document.getElementById('detalle-almacen').textContent   = this.getAttribute('data-almacen');
+        document.getElementById('detalle-producto').textContent  = this.getAttribute('data-producto');
+        document.getElementById('detalle-sku').textContent       = this.getAttribute('data-sku');
+        document.getElementById('detalle-tipo').textContent      = this.getAttribute('data-tipo');
+        document.getElementById('detalle-cantidad').textContent  = this.getAttribute('data-cantidad');
+        document.getElementById('detalle-costo').textContent     = this.getAttribute('data-costo') || '—';
+        document.getElementById('detalle-referencia').textContent= this.getAttribute('data-referencia') || '—';
+        document.getElementById('detalle-usuario').textContent   = this.getAttribute('data-usuario');
+      });
+    });
+
+    document.querySelectorAll('.btn-eliminar').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        const id = this.getAttribute('data-id');
+        if (!confirm('¿Está seguro de eliminar este movimiento?\n\nID: ' + id + '\n\nEl inventario será revertido.')) {
+          e.preventDefault();
+        }
+      });
+    });
+
+    setTimeout(function () {
+      document.querySelectorAll('.erp-alert').forEach(function (el) {
+        el.style.transition = 'opacity 0.4s';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 400);
+      });
+    }, 5000);
+  });
+</script>
+
+</body>
+</html>
